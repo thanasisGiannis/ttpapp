@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<title>Multimodal Route Planner</title>
+	<title>Tourist Tour Planner</title>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
@@ -11,350 +11,207 @@
  	 <!script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"><!/script>
 	 <script async defer
             src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDxth0qsM28RlcY8gF8IaPDfBxPRL_GM1I&libraries=places"></script>
-    <script src="./googlemap.js"></script>
+    <script src="./functionality.js"></script>
 	 <link rel="stylesheet" href="index.css"> 
 </head>
 <body onload="googleMapCallback();" id="main">
 
-<div class="jumbotron text-center" style="background-color:#034200;" >
-	<h1 style="color:#FFF">
-		<img src="./img/ic_logo_teliko-web.png" alt="logo" class="logoHeader" />
-				Multimodal Route Planner
-		<h4 text-align:right; style="color:#FFF">Plan your trip in Western Greece and Puglia! (Under Construction)  </h4> 
-	</h1>
-</div>
+	<div class="jumbotron text-center" style="background-color:#0a83fe;" >
+		<h1 style="color:#FFF">
+			<img src="./img/ic_logo_teliko-web.png" alt="logo" class="logoHeader" />
+					Tourist Tour Planner
+			<h4 text-align:left; style="color:#FFF">Your personal tour guide <br/>in Western Greece and Puglia! (Under Construction)  </h4> 
+		</h1>
+	</div>
 
 
-
-<div class="container-fluid">
-  <div class="row">
-    <div class="col-sm-3">
-				<! buttons>
-				<div class="btn-group btn-group-lg">
-					<button id='trainButton' type="button" class="btn btn-primary " style="background-color:#d8d8d8;z-index:0;"><img src="./img/rail.png" alt='Public' width="30px" height="30px"></button>
-					<button id='carButton' type="button" class="btn btn-primary " style="background-color:#d8d8d8;z-index:0;"><img src="./img/car.png" alt='Car' width="30px" height="30px"></button>
-					<button id='walkButton' type="button" class="btn btn-primary " style="background-color:#d8d8d8;z-index:0;"><img src="./img/walk.png" alt='Walk' width="30px" height="30px"></button>
-					<button   id='hybridButton' type="button" class="btn btn-primary " data-toggle="modal"
-								 data-target="#buttonCheckModal" style="background-color:#d8d8d8;z-index:0;">
-								 <img src="./img/pubcar.png" alt='Hybrid' width="30px" height="30px">
-					</button>
-
-
-					<button   id='profileButton' type="button" class="btn btn-primary " data-toggle="modal"
-								 data-target="#profileModal" style="background-color:#d8d8d8;z-index:0;">
-								 <img src="./img/ic_profile.png" alt='Profile' width="30px" height="30px">
-					</button>
-
-					<button  id='settingsButton' onclick="openNav()" type="button" class="btn btn-primary "
-								 style="background-color:#d8d8d8;z-index:0;">
-								 <img src="./img/settings2.png" alt='Settings' width="30px" height="30px">
-
-					</button>
-
-					
-
-
+	<! content of page> 
+	<div class="container-fluid">
+	  <div class="row">
+		 <div class="col-sm-3">
+				<div>
+					<button id="PoiPrefButton" type="submit" class="btn pull-center btn-primary" style="width:100%" onclick="openPOIsNav()">POIs Preferences</button>
 				</div>
-	
-				<!-- Modal -->
-				  <div class="modal fade"  id="buttonCheckModal" role="dialog">
-					 <div class="modal-dialog">
-					 
-						<!-- Modal content-->
-						<div class="modal-content">
-						  <div class="modal-header">
-							 <h4 class="modal-title">Choose mod</h4>
-						  </div>
-						  <div class="modal-body">
-								<form id="buttonCheckBox">
-									<input type='radio' class='radio-button' id="tmpmod1" name="tmpmod" value="pc">
-										<label for="tmpmod1"> Last Leg </label><br>
-									<input type='radio' class='radio-button' id="tmpmod2" name="tmpmod" value="cpc">
-										<label for="tmpmod2"> Both Legs </label><br>
-									<input type='radio' class='radio-button' id="tmpmod3" name="tmpmod" value="cp">
-										<label for="tmpmod3"> First Leg  </label><br>
-								  <input type="button" value="Submit" id='hybridChoices' class="btn btn-default">
-								</form>
-	
-						  </div>
-						</div>
-					 </div>
-				</div>
-
-
-
-				 <!-- Profile sign in Modal -->
-				  <div class="modal fade"  id="profileModal" role="dialog">
-					 <div class="modal-dialog">
-					 
-						<!-- Modal content-->
-						<div class="col-md-6 col-md-offset-3">
-						<h1 class="text-center text-bold mt-4x">Log in</h1>
-						<div class="well row pt-2x pb-3x bk-light">
-							<div class="col-md-8 col-md-offset-2">
-							  <form method="post">
-									<label for="" class="text-uppercase text-sm">Email or Username</label>
-									<input id="username" type="text" placeholder="Username" name="email" class="form-control mb" required>
-									<label for="" class="text-uppercase text-sm">Password</label>
-									<input id="userpass" type="password" placeholder="Password" name="password" class="form-control mb" required>
-
-									<!button class="btn btn-primary btn-block" name="login" type="submit" action="./logInForm.php" method="post">
-									<button class="btn btn-primary btn-block" id="login" name="login" type="submit" onclick="userLogInSubmit();return false">LOGIN</button>
-								</form>
-
-								<br>
-								<p>Don't Have an Account?<br> <a type="button" class="btn btn-default" data-toggle="modal"
-								 data-target="#createProfileModal" data-dismiss="modal">Sign up</a></p>
-							</div>
-						</div>
-					</div>
-				 </div>
-				</div>
-
-				<! on submit call js function>
-				 <!-- Profile sign in Modal -->
-				  <div class="modal fade"  id="createProfileModal" role="dialog">
-					 <div class="modal-dialog">
-					 
-              <div class="hr-dashed"></div>
-						<div class="well row pt-2x pb-3x bk-light text-center">
-                            <p id="errormessage">&nbsp</p>
-                         <form method="post" class="form-horizontal" enctype="multipart/form-data" name="regform">
-                            <div class="form-group">
-                            <label class="col-sm-1 control-label">Username<span style="color:red">*</span></label>
-                            <div class="col-sm-5">
-                            <input id="name" type="text" name="name" class="form-control" onkeyup="checkUsername()" required>
-                            </div>
-                            <label class="col-sm-1 control-label">Email<span style="color:red">*</span></label>
-                            <div class="col-sm-5">
-                            <input id="email" type="text" name="email" class="form-control" onkeyup="checkMailStatus()" required>
-                            </div>
-                            </div>
-
-                            <div class="form-group">
-                            <label class="col-sm-1 control-label">Password<span style="color:red">*</span></label>
-                            <div class="col-sm-5">
-                            <input type="password" id="password" name="password" class="form-control" id="password" onkeyup='checkpassword();' required >
-                            </div>
-
-                            <label class="col-sm-1 control-label">Confirm Password<span style="color:red">*</span></label>
-                            <div class="col-sm-5">
-                            <input type="password" id="password2" name="password2" class="form-control" onkeyup='checkpassword();' required>
-                            </div>
-                            </div>
-
-                             <div class="form-group">
-                            <label class="col-sm-1 control-label">Country<span style="color:red">*</span></label>
-                            <div class="col-sm-5">
-                            <select name="country" class="form-control" required>
-                            <option value="" hidden></option>
-                            <option value="Greece">Greece</option>
-                            <option value="Italy">Italy</option>
-                            </select>
-                            </div>
-
-                            <label class="col-sm-1 control-label">City<span style="color:red">*</span></label>
-                            <div class="col-sm-5">
-                            <input type="text" name="city" class="form-control" required>
-                            </div>
-                            </div>
-
-                             
-
-								<br>
-                                <button id="submitbutton" class="btn btn-primary" name="submit" type="submit">Register</button>
-                                </form>
-                                <br>
-                                <br>
-								<p>Already Have Account? <br><a type="button" class="btn btn-default" data-toggle="modal"
-								 data-target="#profileModal" data-dismiss="modal">Sign in</a></p>
-							</div>
-						
-
-
-				 </div>
-				</div>
-
-				
-
-
-				<script>
-					document.getElementById("trainButton").onclick = function(){
-						
-												updateMod('pub');
-												resetButtonColor();
-												document.getElementById("trainButton").style.backgroundColor="#034200";
-
-												return false;
-											};
-
-					document.getElementById("walkButton").onclick = function(){
-												updateMod('walk');
-												resetButtonColor();
-												document.getElementById("walkButton").style.backgroundColor="#034200";
-
-											return false;
-											};
-
-					document.getElementById("carButton").onclick = function(){
-												updateMod('car');
-												resetButtonColor();
-												document.getElementById("carButton").style.backgroundColor="#034200";
-
-											return false;
-											};
-
-					document.getElementById("hybridChoices").onclick = function(){
-
-												resetButtonColor();
-												document.getElementById("hybridButton").style.backgroundColor="#034200";
-
-												if(tmpmod1.checked)
-													updateMod('pc'); 
-
-												if(tmpmod2.checked)
-													updateMod('cpc');
-
-												if(tmpmod3.checked)
-													updateMod('cp');
-
-												$('#buttonCheckModal').modal('hide');
-												return false;
-											};
-
-				</script>
-
-			
-
 
 				<! form>
-				<form id="searchForm" style="padding-top:1vh;">
+				<div style="border:1px solid black;">
+				<form id="searchForm" style="padding-top:4vh;padding-bottom:2vh;padding-left:2vw;padding-right:2vw;">
 					<div class="form-group">
-						<input id="spoint" type="text" class="form-control" placeholder="Starting point" >
+						<input id="spoint" type="text" class="form-control" placeholder="Starting at" >
 					</div>
 					<div class="form-group">
-						<input  id="epoint" type="text" class="form-control" placeholder="Destination">
+						<input  id="epoint" type="text" class="form-control" placeholder="Ending at">
 					</div>
-					<button id="searchFormButton" type="submit" class="btn pull-right btn-default" float="right">Search</button>
 				</form> 
+				</div>
 
-				<! on submit call js function>
-				<script> 
-					document.getElementById("searchForm").onsubmit = function(){
-						//setDefault();
-						updateRoute(spoint,epoint);
-						return false;
-						};
+				<div style="border:1px solid black;padding-top=2vh;padding-bottom:2vh;padding-left:2vw;padding-right:2vw;">
+				<h3>Start date/time</h3>
+				<form style="padding-top=2vh;">
+					<label for="dateD">Date:</label>
+					<input type="date" id="dateD" name="dateD"
+							 min="2018-01-01" value="2020-02-01" max="2100-12-31">
+					<label for="timeD">Time:</label>
+					<input type="time" id="timeD" name="timeD">
+				</form>
+
+				<h3>End date/time</h3>
+				<form style="padding-top=2vh;">
+					<label for="dateA">Date:</label>
+					<input type="date" id="dateA" name="dateA"
+							 min="2018-01-01" max="2100-12-31">
+					<label for="timeA">Time:</label>
+					<input type="time" id="timeA" name="timeA">
+				</form>
+
+				<h3 id="headmaxstopovers" style="padding-top=2vh;padding-bottom:2vh;">Maximum number of stopovers: 3</h3>
+				<form id="fromSlider" >
+					<input type="range" min="0" max="3" value="3" step="1" class="slider" id="maxstopovers" name="maxstopovers" data-toggle="tooltip" title="">
+				</form>
+
+				<script>
+					var maxWT = document.getElementById("maxstopovers");
+					document.getElementById("maxstopovers").onchange=function(){
+							maxWT.title= maxWT.value;
+							var headerMaxWT = document.getElementById("headmaxstopovers");
+							headerMaxWT.innerHTML = "Maximum number of stopovers: "+ maxWT.value;
+				}
 				</script>
+				</div>
+			
+				<div style="border:1px solid black; padding-top=2vh">
+				<h3></h3>
+				<form id="transCheckBox" style="padding-top=2vh;padding-bottom:2vh;padding-left:2vw;padding-right:2vw;">
+				  <input checked type='radio' class='radio-button' name="transCheckBox" value="publicTransCheckBox" id="publicTransCheckBox">
+				  <label for="publicTransCheckBox">Public Transport</label><br>
+				  <input type='radio' class='radio-button' name="privateTransCheckBox" value="privateTransCheckBox" id="privateTransCheckBox">
+				  <label for="ldChecked">Private Transport</label><br>
+				</form>
+				</div>
 
-			<div class="container-fluid">
-				<select class="dropdown" id="routeNum" onchange="changeRoute(routeNum)" >
-				  <!--option selected>Route to follow</option-->
-				  <option  selected disabled value="0" for="routeNum" id="routeNum1" name="routeNum">Routes</option>
-				  <option  hidden   disabled value="1" for="routeNum" id="routeNum2" name="routeNum"></option>
-				  <option  hidden   disabled value="2" for="routeNum" id="routeNum3" name="routeNum"></option>
-				</select>
+				<div>
+					<button id="searchFormButton" type="submit" class="btn pull-center btn-primary" style="width:100%">Plan my trip!</button>
+				</div>
+		 </div> <! end first column>
+
+		 <! Tour Plan>
+		 <div class="col-sm-3" style="background-color:#0a83fe;padding-top=2vh;padding-bottom:2vh;padding-left:2vw;padding-right:2vw;">
+			<div>
+			<h2 id="headerTourPlan" align="center" style="color:#FFF"> Tour Plan </h2>
+			<form id="searchForm">
+				<div class="form-group">
+					<input  id="destRegion" type="text" class="form-control" placeholder="Add a destination/region">
+				</div>
+			</form>
+			</div>
+
+		 <! Places Plan>
+			<div>
+			<h2 id="headerPlacesPlan" align="center" style="color:#FFF"> Places to be listed </h2>
+				<h3> Places to be listed</h3>
+			</div>
+ 		 </div> <! end of column >
+
+
+		 <! Map and Info of places>
+		 <div class="col-sm-6" style="padding-top=2vh;padding-bottom:2vh;padding-left:2vw;padding-right:2vw;">
+			<div style="padding-top=2vh;padding-bottom:2vh;padding-left:2vw;padding-right:2vw;">
+				<h2> Infos to be set about places</h2>
+			</div>
+
+			<div style="padding-top=2vh;padding-bottom:2vh;padding-left:2vw;padding-right:2vw;">
+				<h2> Map with places</h2>
+			</div>
+
+		 </div>
+
+		</div> <! end row>
+	<div> <! end container>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	<! sideNav POIs Settings >
+	<div id="POIsSideNav" class="overlay" style="z-index=100;">
+	  <a href="javascript:void(0)" class="closebtn" onclick="closePOIsNav()">&times;</a>
+			<div class="container" style="padding-top=3vh;align=center;background-color:#FFF; align-content: center;">
+			<h2>POIs Preferences</h2>
+
+				<h4 style="align:center">Nature</h4>
+				<form id="fromSlider" >
+					<input type="range" min="0" max="3" value="3" step="1" class="slider" id="toolTipNature" name="toolTipNature" data-toggle="tooltip" title="">
+				</form>
+
+				<h4 style="align:center">Meseums or Galleries</h4>
+				<form id="fromSlider" >
+					<input type="range" min="0" max="3" value="3" step="1" class="slider" id="toolTipMeseusGalleries" name="toolTipMeseusGalleries" data-toggle="tooltip" title="">
+				</form>
+
+				<h4 style="align:center">Monuments or Landmarks</h4>
+				<form id="fromSlider" >
+					<input type="range" min="0" max="3" value="3" step="1" class="slider" id="toolTipMonumentsLandmarks" name="toolTipMonumentsLandmarks" data-toggle="tooltip" title="">
+				</form>
+
+				<h4 style="align:center">Religious Sites</h4>
+				<form id="fromSlider" >
+					<input type="range" min="0" max="3" value="3" step="1" class="slider" id="toolTipReligiousSites" name="toolTipReligiousSites" data-toggle="tooltip" title="">
+				</form>
+
+				<h4 style="align:center">Places with View</h4>
+				<form id="fromSlider" >
+					<input type="range" min="0" max="3" value="3" step="1" class="slider" id="toolTipPlacesView" name="toolTipPlacesView" data-toggle="tooltip" title="">
+				</form>
+
+				<h4 style="align:center">Settlements/Neighborhoods</h4>
+				<form id="fromSlider" >
+					<input type="range" min="0" max="3" value="3" step="1" class="slider" id="toolTipSettlementsNeighborhoods" name="toolTipSettlementsNeighborhoods" data-toggle="tooltip" title="">
+				</form>
+			</div>
+
+			<div class="container" style="padding-top=3vh;padding-bottom=3vh;align=center;background-color:#FFF; align-content: center;">
+				<div class="row">
+					<div class="col-sm-6">
+						<h2>Daily itinerary starts at:</h2>
+						<form style="padding-top=2vh;">
+							<label for="timeD">Time:</label>
+							<input type="time" id="timeD" name="timeD"  value="08:00">
+						</form>
+					</div>
+
+					<div class="col-sm-6">
+						<h2>Daily itinerary ends at:</h2>
+						<form style="padding-top=2vh;">
+							<label for="timeD">Time:</label>
+							<input type="time" id="timeD" name="timeD" value="16:00">
+						</form>
+					</div>
+			</div>
+
+			
+			<div style="align-content: center; padding-top=3vh;">
+				<h2></h2>
+				<button id="POIsSaveButton" type="submit" class="btn pull-center btn-primary" style="width:100%">Save</button>
 			</div>
 
 
-			<div class="col-sm-12" ><div class="directions" id="directions" ></div></div>
-
-
-    </div>
-
-	<div class="col-sm-9" id="map" style=.map></div>
-
-	<div class="menu" id="contextGoogleMapsMenu">
-            <div class="menu-item" onclick="sPointSetMenu()">From here</div>
-            <div class="menu-item" onclick="dPointSetMenu()">Towards here</div>
-   </div>
-
-
-<! Extra query settings sideNav>
-				<div id="settingsSideNav" class="overlay" style="z-index=100;">
-				  <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-
-						<div class="container" style="padding-top=3vh;align=center;background-color:#FFF; align-content: center;">
-						<h2>Transport Preferences</h2>
-						<form>
-						  <input checked type="checkbox" id="vehicleBus" name="vehicleBus" value="bus">
-						  <label for="bus">Bus</label><br>
-						  <input checked type="checkbox" id="vehicleSubway" name="vehicleSubway" value="subway">
-						  <label for="subway">Subway</label><br>
-						  <input checked type="checkbox" id="vehicleTrain" name="vehicleTrain" value="train">
-						  <label for="train">Train</label><br>
-						  <input checked type="checkbox" id="vehicleTram" name="vehicleTram" value="tram">
-						  <label for="tram">Tram</label><br>
-						  <input checked type="checkbox" id="vehicleTrolley" name="vehicleTrolley" value="trolley">
-						  <label for="trolley">Trolley</label><br>
-						  <input checked type="checkbox" id="vehicleBoat" name="vehicleBoat" value="Boat">
-						  <label for="Boat">Boat</label><br>
-						</form>
-						</div>
-
-						<div class="container" style="padding-top=3vh;align=center;background-color:#FFF; align-content: center;">
-							<h2 id="headMaxWalkTime"></h2>
-							<form id="fromSlider">
-								<input type="range" min="0" max="60" value="30" step="5" class="slider" id="maxWalkTime" name="maxWalkTime" data-toggle="tooltip" title="">
-							</form>
-						</div>
-	
-						<script>
-							var maxWT = document.getElementById("maxWalkTime");
-						document.getElementById("maxWalkTime").onchange=function(){
-							maxWT.title= maxWT.value;
-							var headerMaxWT = document.getElementById("headMaxWalkTime");
-							headerMaxWT.innerHTML = "Μaximum walking time: "+ maxWT.value + "min";
-						}
-						</script>
-						
-
-						<div class="container" style="padding-top=3vh;align=center;background-color:#FFF; align-content: center;">
-						<h2>Routes</h2>
-						<form id="buttonCheckBox">
-						  <input checked type='radio' class='radio-button' name="routesCheckBox" value="eaCheckBox" id="eaCheckBox">
-						  <label for="eaChecked">Earliest Arrival</label><br>
-						  <input type='radio' class='radio-button' name="routesCheckBox" value="ldCheckBox" id="ldCheckBox">
-						  <label for="ldChecked">Fewer transfers</label><br>
-						</form>
-						</div>
-
-						<div class="container" style="padding-top=3vh;background-color:#FFF; align-content: center;">
-						<h2>Departure</h2>
-						<form>
-							<label for="dateD">Date:</label>
-							<input type="date" id="dateD" name="dateD"
-									 min="2018-01-01" value="2020-02-01" max="2100-12-31">
-
-							<label for="timeD">Time:</label>
-							<input type="time" id="timeD" name="timeD">
-
-						</form>
-						</div>
-
-
-						<div class="container" style="padding-top=2vh;background-color:#FFF; align-content: center;">
-						<h2>Arrival</h2>
-						<form>
-							<label for="dateA">Date:</label>
-							<input type="date" id="dateA" name="dateA"
-									 min="2018-01-01" max="2100-12-31">
-
-							<label for="timeA">Time:</label>
-							<input type="time" id="timeA" name="timeA">
-
-						</form>
-						</div>
-			 			
-
-
-						<div  class="container" style="padding-top:2vh;background-color:#FFF; align-content: center;">
-							<!form onsubmit="updateSettings()">
-							  <button type="submit" onclick="closeNav();updateSettings()" id='settingsNavSubmit' class="btn btn-default">Submit</button>
-							<!/form>
-					  </div>
-
-				</div>
+		</div>
+	</div>
 
 
 </body>
