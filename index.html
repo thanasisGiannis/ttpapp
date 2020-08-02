@@ -14,7 +14,7 @@
     <script src="./functionality.js"></script>
 	 <link rel="stylesheet" href="index.css"> 
 </head>
-<body onload="googleMapCallback();" id="main">
+<body onload="initializeFunctions();" id="main">
 
 	<div class="jumbotron text-center" style="background-color:#0a83fe;" >
 		<h1 style="color:#FFF">
@@ -66,12 +66,12 @@
 
 				<h3 id="headmaxstopovers" style="padding-top=2vh;padding-bottom:2vh;">Maximum number of stopovers: 3</h3>
 				<form id="fromSlider" >
-					<input type="range" min="0" max="3" value="3" step="1" class="slider" id="maxstopovers" name="maxstopovers" data-toggle="tooltip" title="">
+					<input type="range" min="1" max="3" value="3" step="1" class="slider" id="maxstopovers" name="maxstopovers" data-toggle="tooltip" title="">
 				</form>
 
 				<script>
-					var maxWT = document.getElementById("maxstopovers");
 					document.getElementById("maxstopovers").onchange=function(){
+							var maxWT = document.getElementById("maxstopovers");
 							maxWT.title= maxWT.value;
 							var headerMaxWT = document.getElementById("headmaxstopovers");
 							headerMaxWT.innerHTML = "Maximum number of stopovers: "+ maxWT.value;
@@ -82,10 +82,10 @@
 				<div style="border:1px solid black; padding-top=2vh">
 				<h3></h3>
 				<form id="transCheckBox" style="padding-top=2vh;padding-bottom:2vh;padding-left:2vw;padding-right:2vw;">
-				  <input checked type='radio' class='radio-button' name="transCheckBox" value="publicTransCheckBox" id="publicTransCheckBox">
+				  <input type='radio' class='radio-button' name="transCheckBox" value="publicTransCheckBox" id="publicTransCheckBox">
 				  <label for="publicTransCheckBox">Public Transport</label><br>
 				  <input type='radio' class='radio-button' name="privateTransCheckBox" value="privateTransCheckBox" id="privateTransCheckBox">
-				  <label for="ldChecked">Private Transport</label><br>
+				  <label for="privateTransCheckBox">Private Transport</label><br>
 				</form>
 				</div>
 
@@ -189,16 +189,16 @@
 					<div class="col-sm-6">
 						<h2>Daily itinerary starts at:</h2>
 						<form style="padding-top=2vh;">
-							<label for="timeD">Time:</label>
-							<input type="time" id="timeD" name="timeD"  value="08:00">
+							<label for="timeDIS">Time:</label>
+							<input type="time" id="timeDIS" name="timeDIS"  value="08:00">
 						</form>
 					</div>
 
 					<div class="col-sm-6">
 						<h2>Daily itinerary ends at:</h2>
 						<form style="padding-top=2vh;">
-							<label for="timeD">Time:</label>
-							<input type="time" id="timeD" name="timeD" value="16:00">
+							<label for="timeDIE">Time:</label>
+							<input type="time" id="timeDIE" name="timeDIE" value="16:00">
 						</form>
 					</div>
 			</div>
