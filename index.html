@@ -37,10 +37,10 @@
 				<div style="border:1px solid black;">
 				<form id="searchForm" style="padding-top:4vh;padding-bottom:2vh;padding-left:2vw;padding-right:2vw;">
 					<div class="form-group">
-						<input id="spoint" type="text" class="form-control" placeholder="Starting at" >
+						<input id="spoint" type="text" class="form-control" placeholder="Starting at" onchange='spointUpdate()'>
 					</div>
 					<div class="form-group">
-						<input  id="epoint" type="text" class="form-control" placeholder="Ending at">
+						<input  id="epoint" type="text" class="form-control" placeholder="Ending at" onchange='epointUpdate()'>
 					</div>
 				</form> 
 				</div>
@@ -84,13 +84,13 @@
 				<form id="transCheckBox" style="padding-top=2vh;padding-bottom:2vh;padding-left:2vw;padding-right:2vw;">
 				  <input type='radio' class='radio-button' name="transCheckBox" value="publicTransCheckBox" id="publicTransCheckBox">
 				  <label for="publicTransCheckBox">Public Transport</label><br>
-				  <input type='radio' class='radio-button' name="privateTransCheckBox" value="privateTransCheckBox" id="privateTransCheckBox">
+				  <input type='radio' class='radio-button' name="transCheckBox" value="privateTransCheckBox" id="privateTransCheckBox">
 				  <label for="privateTransCheckBox">Private Transport</label><br>
 				</form>
 				</div>
 
 				<div>
-					<button id="searchFormButton" type="submit" class="btn pull-center btn-primary" style="width:100%">Plan my trip!</button>
+					<button id="searchFormButton" type="submit" class="btn pull-center btn-primary" style="width:100%" onclick="submitQuery()">Plan my trip!</button>
 				</div>
 		 </div> <! end first column>
 
@@ -106,9 +106,9 @@
 			</div>
 
 		 <! Places Plan>
-			<div>
-			<h2 id="headerPlacesPlan" align="center" style="color:#FFF"> Places to be listed </h2>
-				<h3> Places to be listed</h3>
+			<div id="placesPlan" style="background-color:#FFF" class="btn-group">
+			<!--h2 id="headerPlacesPlan" align="center" style="color:#FFF"> Places to be listed </h2-->
+				<!--h3> Places to be listed</h3-->
 			</div>
  		 </div> <! end of column >
 
@@ -120,7 +120,8 @@
 			</div>
 
 			<div style="padding-top=2vh;padding-bottom:2vh;padding-left:2vw;padding-right:2vw;">
-				<h2> Map with places</h2>
+				<div id="map" style="width:100vw; height:75vh;"></div>
+				<!--h2> Map with places</h2-->
 			</div>
 
 		 </div>
