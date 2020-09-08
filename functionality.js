@@ -1,6 +1,12 @@
 /* output data */
-var rawPlanInfo = {};
+var localmap;
+var globalMarkerMap=[]; // periexei olous tous markers sto map
+var globalPolyMap=[];   // periexei oles tis polylines sto map
 
+var rawPlanInfo = {};
+var tourPlanNights = [1,1,1];
+
+var plan = [];
 
 /* input data */
 var start_date;
@@ -10,12 +16,13 @@ var end_time;
 var start_location = { "lat":[], "lon":[]};
 var end_location = { "lat":[], "lon":[]};;
 var max_stop_overs;
+var stop_overs=[];
 var car_days;
 var category_preferences;
 var start_visiting_pois_at;
 var end_visiting_pois_at;
-var partial_solution;
-var partial_solution={compulsory_stop_overs:[],excluded_stop_overs:[]};
+var partial_solution_plan   = {compulsory_pois: [],excluded_pois: []};
+var partial_solution_explore={compulsory_stop_overs:[],excluded_stop_overs:[]};
 var language;
 
 function openPOIsNav() {
@@ -140,6 +147,9 @@ function fillInAddress() {
 	return false;
 }
 
+function daysInMonth (month, year) {
+    return new Date(year, month, 0).getDate();
+}
 
 function setDefaultDateTime(){
 
@@ -149,15 +159,28 @@ function setDefaultDateTime(){
   	var ms = d.getTime();	
 	var ts = Math.round(ms/1000); // round to nearest second
 
-	var month = d.getMonth()+1;
+	var month = parseInt(d.getMonth())+1;
+	var monthA = month;
+
+	var maxDays = parseInt(daysInMonth(d.getMonth(),d.getFullYear()));
+	var day = parseInt(d.getDate());
+	var dayA = day+3;
+
+	if (parseInt(dayA) > parseInt(maxDays)){
+		var restDays = parseInt(dayA)-parseInt(maxDays);
+		dayA = restDays;
+		monthA = monthA+1;
+	}
+	if (day < 10){
+		day = "0"+day;
+	}
+
 	if (month < 10){
 		month = "0"+month;
 	}
 
-	var day = d.getDate();
-	var dayA = day+3;
-	if (day < 10){
-		day = "0"+day;
+	if (monthA < 10){
+		monthA = "0"+monthA;
 	}
 
 	if (dayA < 10){
@@ -168,7 +191,7 @@ function setDefaultDateTime(){
 	document.getElementById("dateD").value = d.getFullYear() +"-"+month+"-"+day;
 
 	document.getElementById("timeA").value = "20:00";
-	document.getElementById("dateA").value = d.getFullYear() +"-"+month+"-"+dayA;;
+	document.getElementById("dateA").value = d.getFullYear() +"-"+monthA+"-"+dayA;
 	/* --------------------- */
 
 
@@ -265,22 +288,24 @@ function epointUpdate(){
 }
 
 
-function submitQuery(){
+function submitQueryPlanTrip(stop_overs){
 
-	/* query info to backend */
-	var data2backend = {"start_date":start_date,
-						 "end_date":end_date,
-						 "start_time":start_time,
-						 "end_time":end_time,
-						 "start_location":start_location,
-						 "end_location":end_location,
-						 "max_stop_overs":max_stop_overs,
-						 "car_days":car_days,
-						 "category_preferences":category_preferences,
-						 "start_visiting_pois_at":start_visiting_pois_at,
-						 "end_visiting_pois_at":end_visiting_pois_at,
-						 "partial_solution":partial_solution,
-						 "language":language};
+	// query info to backend 
+	var data2backend = {
+								 "car_days":car_days,
+								 "category_preferences":category_preferences,
+								 "start_visiting_pois_at":start_visiting_pois_at,
+								 "start_date":start_date,
+								 "end_visiting_pois_at":end_visiting_pois_at,
+								 "start_time":start_time,
+								 "end_date":end_date,
+								 "end_time":end_time,
+								 "start_location":start_location,
+								 "end_location":end_location,
+								 "stop_overs":stop_overs,
+								 "partial_solution":partial_solution_plan,
+								 "language":language
+							  };
 
 
 	var jsonData = JSON.stringify(data2backend);
@@ -288,13 +313,63 @@ function submitQuery(){
 	var xmlhttp = new XMLHttpRequest();
 	xmlhttp.onreadystatechange = function() {
 	if (this.readyState == 4 && this.status == 200) {
-
 			rawPlanInfo = JSON.parse(this.responseText);
-			updateOutputInfo(); // update route infos
-			console.log(rawPlanInfo);
+			plan = rawPlanInfo['solution'];
 		}
 	};
-	xmlhttp.open("POST", "http://web.interreginvestment.eu/ttpapp/query.php?data2b="+jsonData, true);
+	
+	xmlhttp.open("POST", "http://web.interreginvestment.eu/ttp/plan.php?data2b="+jsonData, true);
+	xmlhttp.send();
+
+	return false;
+
+
+
+}
+
+
+function submitQuery(){
+
+	/* query info to backend */
+	var data2backend = {
+								 "car_days":car_days,
+								 "category_preferences":category_preferences,
+								 "start_visiting_pois_at":start_visiting_pois_at,
+								 "end_visiting_pois_at":end_visiting_pois_at,
+								 "start_date":start_date,
+								 "start_time":start_time,
+								 "end_date":end_date,
+								 "end_time":end_time,
+								 "start_location":start_location,
+								 "end_location":end_location,
+								 "max_stop_overs":max_stop_overs,
+								 "partial_solution":partial_solution_explore,
+								 "language":language
+							  };
+
+
+	var jsonData = JSON.stringify(data2backend);
+
+	var xmlhttp = new XMLHttpRequest();
+	xmlhttp.onreadystatechange = function() {
+	if (this.readyState == 4 && this.status == 200) {
+			rawPlanInfo = JSON.parse(this.responseText);
+
+			stop_overs = [];
+			var solution = rawPlanInfo["solution"];
+			var numRoutes = solution.length;
+			for(var i=0; i<numRoutes; i++){
+				var id   = solution[i].id;
+				var days = solution[i].days;
+				stop_overs.push({"id":id,"days": days});
+			}
+
+			submitQueryPlanTrip(stop_overs);
+			updateOutputInfo(); // update route infos
+		}
+	};
+	
+	xmlhttp.open("POST", "http://web.interreginvestment.eu/ttp/query.php?data2b="+jsonData, true);
 	xmlhttp.send();
 
 	return false;
@@ -303,43 +378,53 @@ function submitQuery(){
 
 function updateOutputInfo(){
 
-//	console.log(rawPlanInfo["solution"]);
-	
 	updateRoutePlan();
 
 	return false;
 
 }
 
+function viewPOIS(index){
 
-function updateRoutePlan(){
 
-	var routes = rawPlanInfo["solution"];
+	console.log("POIS");
+	console.log(plan[index]);
 
-	var numRoutes = routes.length;
+	var pois = plan[index].pois;
 
-	for(var i=0; i<numRoutes; i++){
+	for(var i=0;i<pois.length;i++){
+		poisNode = document.createElement('button');
+//		poisNode.className = 'btn';
 
-		var chosen_departure   	 = routes[i].chosen_departure;
-		var days 				  	 = routes[i].days;
-		//var departures_options 	 = routes[i].departures_options;
-		var time 					 = routes[i].departures_options[0].time;
-		var duration 				 = routes[i].departures_options[0].duration;
-		var distance				 = routes[i].departures_options[0].distance;
-		
-		var end_date    		  	 = routes[i].end_date;
-		var hotels 				  	 = routes[i].hotels;
-		var id 					  	 = routes[i].id;
-		var location			  	 = routes[i].location;
-		var locked				    = routes[i].locked;
-		var name					    = routes[i].name;
-		var organized_activities = routes[i].organized_activities;
-		var start_date    		 = routes[i].start_date;
+//		poisNode.style.height = '50vh';
+//		poisNode.style.width  = '50vw';
+
+		poisNode.innerHTML = '<img src='+ pois[i].photo + ' height="100vh" width="70vw" style="float:left">' +
+									'<p style="font-size:15px">' + pois[i].name +
+									'</br>Arrival: ' + pois[i].arrival_time +
+									'</br>Departure: ' + pois[i].departure_time +
+									'</br>Duration: ' + '-' +
+									'</br>Entrance: ' + pois[i].price +
+									'</br></p>';
 
 
 
+		poisNode.style.position="relative";
+		poisNode.style.backgroundColor="white";
+		poisNode.style.float = "center";
+		poisNode.style.height = "100%";
+		poisNode.style.width  = "100%";
+
+		document.getElementById("poisPlan").appendChild(poisNode);		
+	}
 
 
+	document.getElementById("poisPlanCol").style.display="block";
+	document.getElementById("placesPlanCol").style.display="none";
+	return false;
+}
+
+function insertNodeTourPlan(chosen_departure,days,time,duration,distance,end_date,hotels,id,location, locked, name, organized_activities, start_date,index){
 
 		var nod11 = document.createElement('div');
 		var nod12 = document.createElement('div');
@@ -365,13 +450,16 @@ function updateRoutePlan(){
 
 		/* creating nod12 */
 		var nod12_in = document.createElement('pre');
-		nod12_in.innerHTML = "<p>" + i + "</p>";
+		nod12_in.innerHTML = "<p>" + index + "</p>";
 		nod12.appendChild(nod12_in);
 
 
 		/* creating nod13 */
 		var nod13_in = document.createElement('pre');
 		nod13_in.innerHTML = "<p>" + name + "</p>";
+
+		tourPlanNights[index] = 1; 
+		console.log(tourPlanNights);
 		nod13_in.innerHTML = nod13_in.innerHTML + "<pre>" + "<p>" + days + "Night | " + start_date + "-" + end_date + "</p>" +"</pre>";
 		nod13_in.innerHTML = nod13_in.innerHTML + "<pre>" + "<p>" + time + "-" + distance + "," + duration+ "</p>" + "</pre>";
 		nod13_in.style.maxWidth= '100%';
@@ -392,17 +480,144 @@ function updateRoutePlan(){
 
 		var buttonTop = document.createElement('button');
 		buttonTop.appendChild(rowTop);
-		document.getElementById("placesPlan").appendChild(buttonTop);
+		
+		var rowTopButton = document.createElement('div');
+		rowTopButton.className='btn';
+		rowTopButton.onclick = function(){viewPOIS(index);};
+		
+		rowTopButton.appendChild(rowTop);
+		document.getElementById("placesPlan").appendChild(rowTopButton);
 
-
-//		document.getElementById("placesPlan").appendChild(rowTop);
 		document.getElementById("placesPlan").className = 'container-fluid';
 
+
+		return false;
+}
+
+function routePlanUpdateMap(tourPlanLocations){
+
+
+		var latMax=0;
+		var lonMax=0;
+
+		var latMin=Infinity;
+		var lonMin=Infinity;
+		var latlngb=[];
+		/* update markers */
+		for(var i=0;i<globalMarkerMap.length;i++){
+			globalMarkerMap[i].setMap(null);
+		}
+		globaMarkerMap = [];
+
+		var polylinePath=[];
+		for(var i=0; i< tourPlanLocations.length; i++){
+
+			var myLatlng = new google.maps.LatLng(tourPlanLocations[i].lat,tourPlanLocations[i].lon);
+			latlngb.push(myLatlng);
+			console.log(tourPlanLocations[i].lon);
+
+			var marker = new google.maps.Marker({
+					 position: myLatlng,//tourPlanLocations[i],
+					 map: localmap,
+					 //icon:  myIcon,
+					 title: i + 1 + ""
+				  });
+
+
+			marker.setMap(localmap);
+			globalMarkerMap.push(marker);
+			polylinePath.push(myLatlng);
+
+			latMax =  Math.max(latMax,tourPlanLocations[i].lat);
+			lonMax =  Math.max(lonMax,tourPlanLocations[i].lon);
+			
+			latMin =  Math.min(latMin,tourPlanLocations[i].lat);
+			lonMin =  Math.min(lonMin,tourPlanLocations[i].lon);
+
+		}			
+
+
+		/* update polylines */
+		for(var i=0;i<globalPolyMap.length;i++){
+			globalPolyMap[i].setMap(null);
+		}
+		globalPolyMap = [];
+
+		polylinePath.push(myLatlng);
+		polylinePath.push(new google.maps.LatLng(tourPlanLocations[0].lat,tourPlanLocations[0].lon));
+		var polyMap = new google.maps.Polyline({
+          path: polylinePath,
+          geodesic: true,
+          strokeColor:'#66bb6a',
+          strokeOpacity: 1.0,
+          strokeWeight: 5
+        });
+
+		polyMap.setMap(localmap);
+		globalPolyMap.push(polyMap);
+
+
+		/* update map center */
+		var clat = Math.abs(latMax+latMin)/2;
+		var clon = Math.abs(lonMax+lonMin)/2;
+
+		
+		localmap.setCenter(new google.maps.LatLng(clat, clon));
+
+
+		var latlngbounds = new google.maps.LatLngBounds();
+
+		for (var i = 0; i < latlngb.length; i++) {
+			 latlngbounds.extend(latlngb[i]);
+		}
+		localmap.fitBounds(latlngbounds);
+		
+		var zoom = localmap.getZoom();
+		if(zoom > 17){
+			localmap.setZoom(17);
+		}
+
+}
+
+function updateRoutePlan(){
+
+	var routes = rawPlanInfo["solution"];
+
+	var numRoutes = routes.length;
+
+	document.getElementById("placesPlan").innerHTML="";
+	for(var i=0; i<numRoutes; i++){
+
+		var chosen_departure   	 = routes[i].chosen_departure;
+		var days 				  	 = routes[i].days;
+		//var departures_options 	 = routes[i].departures_options;
+		var time 					 = routes[i].departures_options[0].time;
+		var duration 				 = routes[i].departures_options[0].duration;
+		var distance				 = routes[i].departures_options[0].distance;
+		
+		var end_date    		  	 = routes[i].end_date;
+		var hotels 				  	 = routes[i].hotels;
+		var id 					  	 = routes[i].id;
+		var location			  	 = routes[i].location;
+		var locked				    = routes[i].locked;
+		var name					    = routes[i].name;
+		var organized_activities = routes[i].organized_activities;
+		var start_date    		 = routes[i].start_date;
+
+
+
+		insertNodeTourPlan(chosen_departure,days,time,duration,distance,end_date,hotels,id,location, locked, name, organized_activities, start_date,i);
+
 	}
+
+	var tourPlanLocations = [];
+	for(var i=0; i<numRoutes; i++){
+		var location = routes[i].location;
+		tourPlanLocations.push(location);
+	}
+	console.log(tourPlanLocations);
+	routePlanUpdateMap(tourPlanLocations);
 	
-
-
-
 	return false;
 }
 
@@ -412,8 +627,8 @@ function initMap() {
 /* OpenStreet Map */
 
 	localmap = new google.maps.Map(document.getElementById('map'), {
-          zoom: 12,
-          center: {lat: 38.246639, lng: 21.734573},
+          zoom: 10,
+           center: {lat: 38.246639, lng: 21.734573},
           mapTypeId: "OSM"
         });
 

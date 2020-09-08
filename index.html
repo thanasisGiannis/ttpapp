@@ -95,32 +95,58 @@
 		 </div> <! end first column>
 
 		 <! Tour Plan>
-		 <div class="col-sm-3" style="background-color:#0a83fe;padding-top=2vh;padding-bottom:2vh;padding-left:2vw;padding-right:2vw;">
-			<div>
-			<h2 id="headerTourPlan" align="center" style="color:#FFF"> Tour Plan </h2>
-			<form id="searchForm">
-				<div class="form-group">
-					<input  id="destRegion" type="text" class="form-control" placeholder="Add a destination/region">
+		 <div class="col-sm-3" style="background-color:#0a83fe;padding-top=2vh;padding-bottom:2vh;padding-left:2vw;padding-right:2vw;display:block">
+			<div id="placesPlanCol">
+				<div>
+				<h2 id="headerTourPlan" align="center" style="color:#FFF"> Tour Plan </h2>
+				<form id="searchForm">
+					<div class="form-group">
+						<input  id="destRegion" type="text" class="form-control" placeholder="Add a destination/region">
+					</div>
+				</form>
 				</div>
-			</form>
+
+			 <! Places Plan>
+				<div>
+					<div id="placesPlan" style="background-color:#FFF;" class="btn-group">
+					<!--h2 id="headerPlacesPlan" align="center" style="color:#FFF"> Places to be listed </h2-->
+						<!--h3> Places to be listed</h3-->
+					</div>
+				</div>
+
+
+		   </div> <! end of placesPlanCol">
+			
+<!--
+			<div id="poisPlanCol" style="display:none; background-color:white; width:'100%'; height:'100%'">
+				<button type="button" class="close" aria-label="Close"
+		 onclick='document.getElementById("poisPlanCol").style.display="none";document.getElementById("placesPlanCol").style.display="block";document.getElementById("poisPlan").innerHTML="";'>
+				<span>&times;</span></button>
+
+				<div id="poisPlan" style="width: inherit; max-height: 56.5vh; overflow-y:auto;padding-top:'5vh';"></div>
+			</div>
+-->
+			<div id="poisPlanCol" >
+				<button type="button" class="close" aria-label="Close"
+		 onclick='document.getElementById("poisPlanCol").style.display="none";document.getElementById("placesPlanCol").style.display="block";document.getElementById("poisPlan").innerHTML="";'>
+				<span>&times;</span></button>
+
+				<div id="poisPlan" style="max-height:75vh"></div>
 			</div>
 
-		 <! Places Plan>
-			<div id="placesPlan" style="background-color:#FFF" class="btn-group">
-			<!--h2 id="headerPlacesPlan" align="center" style="color:#FFF"> Places to be listed </h2-->
-				<!--h3> Places to be listed</h3-->
-			</div>
+
  		 </div> <! end of column >
 
 
 		 <! Map and Info of places>
 		 <div class="col-sm-6" style="padding-top=2vh;padding-bottom:2vh;padding-left:2vw;padding-right:2vw;">
 			<div style="padding-top=2vh;padding-bottom:2vh;padding-left:2vw;padding-right:2vw;">
-				<h2> Infos to be set about places</h2>
+				<button> <h2> Infos to be set about places</h2></button>
 			</div>
 
-			<div style="padding-top=2vh;padding-bottom:2vh;padding-left:2vw;padding-right:2vw;">
-				<div id="map" style="width:100vw; height:75vh;"></div>
+
+			<!div style="width:10vw; height:10vh;padding-top=2vh;padding-bottom:2vh;padding-left:2vw;padding-right:2vw;">
+			<div class="z-depth-1-half map-container-4" style="height:65vh;width:47vw;" id="map">
 				<!--h2> Map with places</h2-->
 			</div>
 
