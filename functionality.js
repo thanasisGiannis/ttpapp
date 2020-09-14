@@ -2,6 +2,10 @@
 var localmap;
 var globalMarkerMap=[]; // periexei olous tous markers sto map
 var globalPolyMap=[];   // periexei oles tis polylines sto map
+var poiMarker;
+var clat;
+var clon;
+
 
 var rawPlanInfo = {};
 var tourPlanNights = [1,1,1];
@@ -34,6 +38,10 @@ function closePOIsNav() {
 }
 
 function initializeFunctions(){
+
+	var swidth = $( window ).width();
+	var sheight = $( window ).height();
+	cssDeviceChange(swidth,sheight);
 
 	defaultVals();
 	initAutocomplete('spoint');
@@ -369,6 +377,7 @@ function submitQuery(){
 		}
 	};
 	
+	console.log("http://web.interreginvestment.eu/ttp/query.php?data2b="+jsonData)
 	xmlhttp.open("POST", "http://web.interreginvestment.eu/ttp/query.php?data2b="+jsonData, true);
 	xmlhttp.send();
 
@@ -384,29 +393,141 @@ function updateOutputInfo(){
 
 }
 
-function viewPOIS(index){
+function closeInfos(){
+
+	/* close pois list */
+	document.getElementById("poisPlanCol").style.display="none";
+	document.getElementById("placesPlanCol").style.display="block";
+	document.getElementById("poisPlan").innerHTML="";
+
+	/* close poi info */
+	document.getElementById('placesInfo').innerHTML = "";
+	document.getElementById('placesInfo').height = "0vh";
+
+	/* reset map to its original dimensions */
+	document.getElementById('map').style.height= '73vh';
 
 
-	console.log("POIS");
-	console.log(plan[index]);
+	if(poiMarker != undefined){
+		poiMarker.setMap(null);
+	}	
+	for(var i=0;i<globalMarkerMap.length; i++){
+		globalMarkerMap[i].setMap(localmap);
+	
+	}
+	
+	for(var i=0;i<globalPolyMap.length; i++){
+		globalPolyMap[i].setMap(localmap);
+	
+	}
 
-	var pois = plan[index].pois;
 
-	for(var i=0;i<pois.length;i++){
-		poisNode = document.createElement('button');
-//		poisNode.className = 'btn';
+	localmap.setCenter(new google.maps.LatLng(clat, clon));
+	
+	return false;
+}
 
-//		poisNode.style.height = '50vh';
-//		poisNode.style.width  = '50vw';
+function addInfoToPoi(info){
 
-		poisNode.innerHTML = '<img src='+ pois[i].photo + ' height="100vh" width="70vw" style="float:left">' +
-									'<p style="font-size:15px">' + pois[i].name +
-									'</br>Arrival: ' + pois[i].arrival_time +
-									'</br>Departure: ' + pois[i].departure_time +
-									'</br>Duration: ' + '-' +
-									'</br>Entrance: ' + pois[i].price +
+	var placeInfo = document.getElementById('placesInfo');
+
+	placeInfo.innerHTML = '<h2>' + info.name +'</h2>';
+	placeInfo.innerHTML = placeInfo.innerHTML + '<p><img src='+ info.photo + ' height="120vh" width="120vw" onError="this.src = \'./img/imgNotFound.png\'" style="float:left; padding-top:1vh; padding-right:2vw;">' +
+									'</br>Duration: ' + info.visit_time +
+									'</br>Entrance: ' + info.price +
 									'</br></p>';
 
+
+	placeInfo.innerHTML =  placeInfo.innerHTML + '<p style="padding-top:1vh;"> ' + info.description +'</p>';
+
+//	placeInfo.style.borderStyle = 'solid';
+	placeInfo.style.maxHeight = '70vh';
+	placeInfo.style.width = '47vw';
+	placeInfo.style.overflowY = 'scroll';
+
+	var swidth = $( window ).width();
+	var sheight = $( window ).height();
+	cssDeviceChange(swidth,sheight);
+
+	var mmap = document.getElementById('map');
+
+	mmap.style.height= '30vh';
+
+
+		for(var i=0;i<globalMarkerMap.length; i++){
+		globalMarkerMap[i].setMap(null);
+	
+	}
+	
+	for(var i=0;i<globalPolyMap.length; i++){
+		globalPolyMap[i].setMap(null);
+	
+	}
+
+
+	if(poiMarker != undefined){
+		poiMarker.setMap(null);
+	}
+	var myLatlng = new google.maps.LatLng(info.latlon.lat,info.latlon.lon);
+	poiMarker = new google.maps.Marker({
+			 position: myLatlng,
+			 map: localmap
+		  });
+
+
+	poiMarker.setMap(localmap);
+	localmap.setCenter(new google.maps.LatLng(info.latlon.lat, info.latlon.lon));
+	
+
+
+
+	console.log(info.name);
+	console.log(info);
+}
+
+function viewInfosPOIS(id){
+
+//	console.log(poisId);
+
+	
+	/* query info to backend */
+	var data2backend = {
+								 "activityId":""+id,
+								 "language":language
+							  };
+
+
+	var jsonData = JSON.stringify(data2backend);
+	var xmlhttp = new XMLHttpRequest();
+	xmlhttp.onreadystatechange = function() {
+	if (this.readyState == 4 && this.status == 200) {
+			var info = JSON.parse(this.responseText);
+			addInfoToPoi(info);
+		}
+	};
+	
+	console.log("http://web.interreginvestment.eu/ttp/info.php?data2b="+jsonData);
+	xmlhttp.open("POST", "http://web.interreginvestment.eu/ttp/info.php?data2b="+jsonData, true);
+	xmlhttp.send();
+
+
+
+	return false;
+}
+
+
+function updatePoisButton(poi){
+
+
+		var poisNode = document.createElement('button');
+		var photo = poi.photo.split(",");
+		poisNode.innerHTML = '<img src='+ photo[0] + ' height="100vh" width="70vw" onError="this.src = \'./img/imgNotFound.png\'" style="float:left; padding-top:1vh;">' +
+									'<p style="font-size:15px">' + poi.name +
+									'</br>Arrival: ' + poi.arrival_time +
+									'</br>Departure: ' + poi.departure_time +
+									'</br>Duration: ' + '-' +
+									'</br>Entrance: ' + poi.price +
+									'</br></p>';
 
 
 		poisNode.style.position="relative";
@@ -415,9 +536,27 @@ function viewPOIS(index){
 		poisNode.style.height = "100%";
 		poisNode.style.width  = "100%";
 
-		document.getElementById("poisPlan").appendChild(poisNode);		
-	}
 
+		var poisId = parseInt(poi["id"]);
+		poisNode.onclick = function(){
+										viewInfosPOIS(poisId);
+										return false;
+								 };
+
+		document.getElementById("poisPlan").appendChild(poisNode);		
+}
+
+function viewPOIS(index){
+
+
+	console.log("POIS");
+	console.log(plan[index]);
+
+	var pois = plan[index].pois;
+
+	for(var i=0;i<pois.length; i++){
+		updatePoisButton(pois[i]);
+	}
 
 	document.getElementById("poisPlanCol").style.display="block";
 	document.getElementById("placesPlanCol").style.display="none";
@@ -426,71 +565,27 @@ function viewPOIS(index){
 
 function insertNodeTourPlan(chosen_departure,days,time,duration,distance,end_date,hotels,id,location, locked, name, organized_activities, start_date,index){
 
-		var nod11 = document.createElement('div');
-		var nod12 = document.createElement('div');
-		var nod13 = document.createElement('div');
-		var nod14 = document.createElement('div');
+		var button = document.createElement('button');
 
-		nod11.className = 'col-sm-2';
-		nod12.className = 'col-sm-2';
-		nod13.className = 'col-sm-6';
-		nod14.className = 'col-sm-2';
-
-
-
-		
-		/* creating nod11 */
-		var button11 = document.createElement('button');
-		button11.innerHTML = "<p style='width:100%'>" + "^v " + "</p>";
-		button11.type = "button";
-		button11.className = "btn" ;
-		button11.style.width = "100%";
-		nod11.appendChild(button11);
+		button.innerHTML =  "<pre style='background-color:inherit;border-style:none;'>" + 
+									" | " + index + " | " +
+								   " <pre style='background-color:inherit;border-style:none;'> " + name  +
+									" for " + days + " Night(s) \n" + start_date  + " until " + end_date +"\n" +
+									"Departure: " + time + " - Distance: "  + distance   + " \nDuration: " + duration + "</pre>" + 
+									"</pre>"+																			
+									"</pre>";
 
 
-		/* creating nod12 */
-		var nod12_in = document.createElement('pre');
-		nod12_in.innerHTML = "<p>" + index + "</p>";
-		nod12.appendChild(nod12_in);
+		button.style.height = "100%";
+		button.style.width  = "100%";
+		button.style.backgroundColor  = "inherit";
+		button.onclick = function(){viewPOIS(index);};
+		button.paddingTop = "3vh";
 
-
-		/* creating nod13 */
-		var nod13_in = document.createElement('pre');
-		nod13_in.innerHTML = "<p>" + name + "</p>";
-
-		tourPlanNights[index] = 1; 
-		console.log(tourPlanNights);
-		nod13_in.innerHTML = nod13_in.innerHTML + "<pre>" + "<p>" + days + "Night | " + start_date + "-" + end_date + "</p>" +"</pre>";
-		nod13_in.innerHTML = nod13_in.innerHTML + "<pre>" + "<p>" + time + "-" + distance + "," + duration+ "</p>" + "</pre>";
-		nod13_in.style.maxWidth= '100%';
-		nod13.appendChild(nod13_in);
-		
-
-		/* creating nod14 */
-		nod14.innerHTML = "<p>" + " o- <br> [] " + "</p>";
-		nod14.style.textAlign = "left";
-
-
-		var rowTop = document.createElement('div');
-		rowTop.className = 'row';
-		rowTop.appendChild(nod11);
-		rowTop.appendChild(nod12);
-		rowTop.appendChild(nod13);
-		rowTop.appendChild(nod14);
-
-		var buttonTop = document.createElement('button');
-		buttonTop.appendChild(rowTop);
-		
-		var rowTopButton = document.createElement('div');
-		rowTopButton.className='btn';
-		rowTopButton.onclick = function(){viewPOIS(index);};
-		
-		rowTopButton.appendChild(rowTop);
-		document.getElementById("placesPlan").appendChild(rowTopButton);
-
+		document.getElementById("placesPlan").appendChild(button);
+//----		
 		document.getElementById("placesPlan").className = 'container-fluid';
-
-
+		
 		return false;
 }
 
@@ -558,8 +653,8 @@ function routePlanUpdateMap(tourPlanLocations){
 
 
 		/* update map center */
-		var clat = Math.abs(latMax+latMin)/2;
-		var clon = Math.abs(lonMax+lonMin)/2;
+		clat = Math.abs(latMax+latMin)/2;
+		clon = Math.abs(lonMax+lonMin)/2;
 
 		
 		localmap.setCenter(new google.maps.LatLng(clat, clon));
@@ -666,6 +761,55 @@ function initMap() {
  
 	});
 
+}
+
+
+
+function cssDeviceChange( swidth,sheight){
+
+//style="width:100px; max-width:400px;"
+
+
+
+
+	if(swidth <= 800){
+		/* mobile or tablet */
+
+		$("#map").before($("#placesInfo"));
+		document.getElementById('map').style.width  = '100vw';
+		document.getElementById('map').style.height = '50vh';
+		document.getElementById('placesInfo').style.width  = '100vw';
+
+
+		document.getElementById('superPlacesPlanCol').style.maxWidth = '50vw';
+
+		document.getElementById('sdatetime').style.zoom='0.85';
+		document.getElementById('edatetime').style.zoom='0.85';
+
+
+
+	}else{
+		$("#placesInfo").before($("#map"));
+
+		document.getElementById('map').style.width  = '47vw';
+		document.getElementById('map').style.height = '73vh';
+
+		if(document.getElementById('placesInfo').innerHTML != ""){
+			document.getElementById('map').style.height = '30vh';
+
+		}
+		document.getElementById('placesInfo').style.maxHeight = '70vh';
+		document.getElementById('placesInfo').style.width = '47vw';
+
+		document.getElementById('placesPlanCol').style.zoom  = '1';
+		document.getElementById('sdatetime').style.zoom='1';
+		document.getElementById('edatetime').style.zoom='1';
+
+	}
+
+	document.getElementById('superPlacesPlanCol').style.maxWidth = '100vw';
+
+	return false;
 }
 
 

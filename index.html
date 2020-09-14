@@ -28,7 +28,7 @@
 	<! content of page> 
 	<div class="container-fluid">
 	  <div class="row">
-		 <div class="col-sm-3">
+		 <div class="col-sm-3" style="padding-bottom:2vh;">
 				<div>
 					<button id="PoiPrefButton" type="submit" class="btn pull-center btn-primary" style="width:100%" onclick="openPOIsNav()">POIs Preferences</button>
 				</div>
@@ -45,9 +45,9 @@
 				</form> 
 				</div>
 
-				<div style="border:1px solid black;padding-top=2vh;padding-bottom:2vh;padding-left:2vw;padding-right:2vw;">
+				<div style="border:1px solid black;padding-top=2vh;padding-bottom:2vh;padding-left:2vw;padding-right:2vw;" >
 				<h3>Start date/time</h3>
-				<form style="padding-top=2vh;">
+				<form style="padding-top=2vh;" id="sdatetime">
 					<label for="dateD">Date:</label>
 					<input type="date" id="dateD" name="dateD"
 							 min="2018-01-01" value="2020-02-01" max="2100-12-31">
@@ -56,7 +56,7 @@
 				</form>
 
 				<h3>End date/time</h3>
-				<form style="padding-top=2vh;">
+				<form style="padding-top=2vh;" id="edatetime">
 					<label for="dateA">Date:</label>
 					<input type="date" id="dateA" name="dateA"
 							 min="2018-01-01" max="2100-12-31">
@@ -64,7 +64,7 @@
 					<input type="time" id="timeA" name="timeA">
 				</form>
 
-				<h3 id="headmaxstopovers" style="padding-top=2vh;padding-bottom:2vh;">Maximum number of stopovers: 3</h3>
+				<h4 id="headmaxstopovers" style="padding-top=2vh;padding-bottom:2vh;">Maximum number of stopovers: 3</h4>
 				<form id="fromSlider" >
 					<input type="range" min="1" max="3" value="3" step="1" class="slider" id="maxstopovers" name="maxstopovers" data-toggle="tooltip" title="">
 				</form>
@@ -95,7 +95,7 @@
 		 </div> <! end first column>
 
 		 <! Tour Plan>
-		 <div class="col-sm-3" style="background-color:#0a83fe;padding-top=2vh;padding-bottom:2vh;padding-left:2vw;padding-right:2vw;display:block">
+		 <div class="col-sm-3" style="background-color:#0a83fe;padding-top=2vh;padding-bottom:2vh;padding-left:2vw;padding-right:2vw;display:block;max-height:85vh;" id='superPlacesPlanCol'>
 			<div id="placesPlanCol">
 				<div>
 				<h2 id="headerTourPlan" align="center" style="color:#FFF"> Tour Plan </h2>
@@ -107,8 +107,8 @@
 				</div>
 
 			 <! Places Plan>
-				<div>
-					<div id="placesPlan" style="background-color:#FFF;" class="btn-group">
+				<div style="padding-top=2vh;padding-bottom:2vh;padding-left:0vw;padding-right:0vw;" >
+					<div id="placesPlan" style="background-color:#FFF;padding-top:0.5vh;" class="btn-group">
 					<!--h2 id="headerPlacesPlan" align="center" style="color:#FFF"> Places to be listed </h2-->
 						<!--h3> Places to be listed</h3-->
 					</div>
@@ -117,21 +117,13 @@
 
 		   </div> <! end of placesPlanCol">
 			
-<!--
-			<div id="poisPlanCol" style="display:none; background-color:white; width:'100%'; height:'100%'">
-				<button type="button" class="close" aria-label="Close"
-		 onclick='document.getElementById("poisPlanCol").style.display="none";document.getElementById("placesPlanCol").style.display="block";document.getElementById("poisPlan").innerHTML="";'>
-				<span>&times;</span></button>
-
-				<div id="poisPlan" style="width: inherit; max-height: 56.5vh; overflow-y:auto;padding-top:'5vh';"></div>
-			</div>
--->
-			<div id="poisPlanCol" >
-				<button type="button" class="close" aria-label="Close"
-		 onclick='document.getElementById("poisPlanCol").style.display="none";document.getElementById("placesPlanCol").style.display="block";document.getElementById("poisPlan").innerHTML="";'>
-				<span>&times;</span></button>
-
-				<div id="poisPlan" style="max-height:75vh"></div>
+			<div id="poisPlanCol" style="display:none;" >
+			<h1 style='background-colo:white;'>
+				<button type="button" class="close" aria-label="Close" onclick='closeInfos();' style="background-color:#000000;border: none; color: white; padding: 5px 5px; text-align: center; text-decoration: none;  display:inline-block; font-size: 16px;">
+				  <span  aria-hidden="true">&times;</span>
+				</button>
+			</h1>
+				<div style="max-height:inherit;padding-right:1vw;padding-left:1vw;padding-top:3vh;padding-botton:2vh;"><div id="poisPlan" style="max-height:55vh;overflow-y:auto;"></div></div>
 			</div>
 
 
@@ -140,16 +132,9 @@
 
 		 <! Map and Info of places>
 		 <div class="col-sm-6" style="padding-top=2vh;padding-bottom:2vh;padding-left:2vw;padding-right:2vw;">
-			<div style="padding-top=2vh;padding-bottom:2vh;padding-left:2vw;padding-right:2vw;">
-				<button> <h2> Infos to be set about places</h2></button>
-			</div>
 
-
-			<!div style="width:10vw; height:10vh;padding-top=2vh;padding-bottom:2vh;padding-left:2vw;padding-right:2vw;">
-			<div class="z-depth-1-half map-container-4" style="height:65vh;width:47vw;" id="map">
-				<!--h2> Map with places</h2-->
-			</div>
-
+			<div class="z-depth-1-half map-container-4" style="height:73vh;width:47vw;" id="map"></div>
+			<div style="padding-top=2vh;padding-bottom:1vh;padding-left:2vw;padding-right:2vw;width:47vw;" id="placesInfo"></div>
 		 </div>
 
 		</div> <! end row>
@@ -243,4 +228,21 @@
 
 </body>
 </html>
+
+
+<script>
+	$(document).ready(function(){
+		var swidth = $( window ).width();
+		var sheight = $( window ).height();
+		cssDeviceChange(swidth,sheight);
+	});
+
+
+	$( window ).resize(function() {
+		var swidth = $( window ).width();
+		var sheight = $( window ).height();
+		cssDeviceChange(swidth,sheight);
+	});
+</script>
+
 
