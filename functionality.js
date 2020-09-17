@@ -11,6 +11,9 @@ var rawPlanInfo = {};
 var tourPlanNights = [1,1,1];
 
 var plan = [];
+var contextMenuDisplayed = false;
+var contextMenuSpoint = undefined;
+var contextMenuDpoint = undefined;
 
 /* input data */
 var start_date;
@@ -361,6 +364,7 @@ function submitQuery(){
 	var xmlhttp = new XMLHttpRequest();
 	xmlhttp.onreadystatechange = function() {
 	if (this.readyState == 4 && this.status == 200) {
+			console.log(this.responseText);			
 			rawPlanInfo = JSON.parse(this.responseText);
 
 			stop_overs = [];
@@ -567,12 +571,23 @@ function insertNodeTourPlan(chosen_departure,days,time,duration,distance,end_dat
 
 		var button = document.createElement('button');
 
+		var nights    = 1;
+		var maxnights = 1;
+		
+		if(index == 0){
+			maxnights = 3;
+		}else{
+			maxnights = 2;
+		}
+
 		button.innerHTML =  "<pre style='background-color:inherit;border-style:none;'>" + 
 									" | " + index + " | " +
-								   " <pre style='background-color:inherit;border-style:none;'> " + name  +
-									" for " + days + " Night(s) \n" + start_date  + " until " + end_date +"\n" +
+								   //" <pre style='background-color:inherit;border-style:none;'> "
+									"\n" + name  +
+//									" for " + days + " Night(s) \n" + start_date  + " until " + end_date +"\n" +
+									"\n" + start_date  + " until " + end_date +"\n" +
 									"Departure: " + time + " - Distance: "  + distance   + " \nDuration: " + duration + "</pre>" + 
-									"</pre>"+																			
+									//"</pre>"+																			
 									"</pre>";
 
 
@@ -581,11 +596,57 @@ function insertNodeTourPlan(chosen_departure,days,time,duration,distance,end_dat
 		button.style.backgroundColor  = "inherit";
 		button.onclick = function(){viewPOIS(index);};
 		button.paddingTop = "3vh";
+		button.style.borderStyle  = "none";
 
-		document.getElementById("placesPlan").appendChild(button);
-//----		
-		document.getElementById("placesPlan").className = 'container-fluid';
+
+
+		var nightsBtn = document.createElement('SELECT');
+
+		nightsBtn.style.height = "2%";
+		nightsBtn.style.width  = "100%";
+		nightsBtn.style.backgroundColor  = "inherit";
+		nightsBtn.style.borderStyle  = "none";
+
+
+		for(var i=1; i<maxnights+1; i++){
+			var z = document.createElement("option");
+			z.setAttribute("value", i  );
+			var t = document.createTextNode("for " + i +" night(s)");
+			z.appendChild(t);
+			if(i == days){
+				z.selected="selected";
+			}			
+			nightsBtn.appendChild(z);
+		}
+
+
+
+		nightsBtn.style.textAlignLast = 'center';			
+		nightsBtn.onchange = function(){alert('changed');};	
+		var btnsGr = document.createElement('div');
 		
+		btnsGr.appendChild(button);
+		btnsGr.appendChild(nightsBtn);
+		btnsGr.style.borderStyle  = "solid";
+
+		document.getElementById("placesPlan").appendChild(btnsGr);
+		document.getElementById("placesPlan").style.paddingBottom='0.5vh';
+
+		document.getElementById("placesPlan").className = 'container-fluid';
+
+
+/*
+
+		dr = document.getElementById('nightsDropDownButton'+index);
+		for (var i=1;i<maxnights+1;i++){
+			var z = document.createElement("dropdown-item");
+			z.setAttribute("value", i);
+			var t = document.createTextNode(""+i+ " Night(s)");
+			z.appendChild(t);
+			dr.appendChild(z);
+
+		}
+*/
 		return false;
 }
 
@@ -739,7 +800,7 @@ function initMap() {
 
 	//map = localmap;
 
-
+/*
 	localmap.addListener('rightclick', function(e) {
 
 
@@ -747,24 +808,220 @@ function initMap() {
 	
 		var menuBox = document.getElementById("contextGoogleMapsMenu");
 		var localmap = document.getElementById("map");		
-		//menuBox.style.left = left + "px";
-		//menuBox.style.top  = top + "px";
-		var leftS = localmap.getBoundingClientRect().left + e.pixel.x;
-		var topS  = localmap.getBoundingClientRect().top  + e.pixel.y;
-		
-		menuBox.style.left = leftS + "px";
-		menuBox.style.top  = topS  + "px";
 
+		var menuBoxWidth = menuBox.style.width;
+		menuBoxWidth = parseInt(String(menuBoxWidth).replace('px',''));
+
+
+		var menuBoxHeight = menuBox.style.height;
+		menuBoxHeight = parseInt(String(menuBoxHeight).replace('px',''));
+		
+
+
+		var Xpos = parseInt(localmap.getBoundingClientRect().left + e.pixel.x);
+		var Ypos  = parseInt(localmap.getBoundingClientRect().top  + e.pixel.y);
+
+		var Xpos2 = Xpos;
+		var Ypos2 = Ypos;
+
+		if(Xpos  > localmap.getBoundingClientRect().right/2){
+			Xpos2 = (Xpos - menuBoxWidth);
+		}
+
+		if(Ypos  > localmap.getBoundingClientRect().bottom/2){
+			Ypos2 = Ypos2 - menuBoxHeight;
+		}
+
+		menuBox.style.left = Xpos2  + "px";
+		menuBox.style.top  = Ypos2  + "px";
 	
 		menuBox.style.display = "block";
 		contextMenuDisplayed = true;
  
+
 	});
+
+
+	localmap.addListener("click", function (e)
+	{
+			var timeOutSuccess = false;
+			if(contextMenuDisplayed == false){
+				setTimeout(function(){
+					  
+								contextLatLng = e.latLng;
+							
+								var menuBox = document.getElementById("contextGoogleMapsMenu");
+								var localmap = document.getElementById("map");		
+
+								var menuBoxWidth = menuBox.style.width;
+								menuBoxWidth = parseInt(String(menuBoxWidth).replace('px',''));
+
+
+								var menuBoxHeight = menuBox.style.height;
+								menuBoxHeight = parseInt(String(menuBoxHeight).replace('px',''));
+								
+
+
+								var Xpos = parseInt(localmap.getBoundingClientRect().left + e.pixel.x);
+								var Ypos  = parseInt(localmap.getBoundingClientRect().top  + e.pixel.y);
+
+								var Xpos2 = Xpos;
+								var Ypos2 = Ypos;
+
+								if(Xpos  > localmap.getBoundingClientRect().right/2){
+									Xpos2 = (Xpos - menuBoxWidth);
+								}
+
+								if(Ypos  > localmap.getBoundingClientRect().bottom/2){
+									Ypos2 = Ypos2 - menuBoxHeight;
+								}
+
+								menuBox.style.left = Xpos2  + "px";
+								menuBox.style.top  = Ypos2  + "px";
+							
+								menuBox.style.display = "block";
+								contextMenuDisplayed = true;
+								timeOutSuccess = true;
+					
+				 }, 1000);
+			}
+
+		if (contextMenuDisplayed == true)
+	 	{
+  			 contextMenuDisplayed = false;
+	  		 var menuBox = document.getElementById("contextGoogleMapsMenu");
+			 menuBox.style.display = "none";
+		}
+
+	});
+*/
 
 }
 
+/*
+function sPointSetMenu(){
 
 
+	var menuBox = document.getElementById("contextGoogleMapsMenu");
+	menuBox.style.display = "none";
+
+
+	var latLng = contextLatLng.toString(); 
+	latLng = latLng.replace('(','');
+	latLng = latLng.replace(')','');
+	
+	var dest = latLng;
+
+	latLng = latLng.split(",");
+	console.log("sending to google: " + latLng);
+
+
+
+	var xmlhttp = new XMLHttpRequest();
+	xmlhttp.onreadystatechange = function() {
+	if (this.readyState == 4 && this.status == 200) {
+			var jsonSpoint = JSON.parse(this.responseText);
+
+			if(contextMenuSpoint!=undefined){
+				contextMenuSpoint.setMap(null);
+			}
+
+			var messageS = jsonSpoint.results[3].formatted_address ; //'You are here';
+			messageS = messageS.replace(",", "");
+
+			var markerS = new google.maps.Marker({
+					 position: contextLatLng,
+					 map: localmap,
+					 icon:'./img/start.png',
+					title: messageS
+				 });
+
+			globalMarkerMap.push(markerS);
+
+			contextMenuSpoint=markerS;
+		
+			document.getElementById("spoint").value=messageS;
+			document.getElementById("spoint").placeholder=messageS;
+
+			console.log("Before spoint: "+latLng);
+
+			console.log("spoint: " +  document.getElementById("spoint").value);
+			latLng[0].replace(" ","");
+			latLng[1].replace(" ","");
+
+			slat = Number(latLng[0]);
+			slon = Number(latLng[1]);
+				
+			return false;
+		}
+	};
+
+
+	xmlhttp.open("POST", 'https://maps.googleapis.com/maps/api/geocode/json?latlng='+ latLng +'&key=AIzaSyDxth0qsM28RlcY8gF8IaPDfBxPRL_GM1I', true);
+	xmlhttp.send();
+
+
+	return false;
+}
+
+function dPointSetMenu(){
+
+	var menuBox = document.getElementById("contextGoogleMapsMenu");
+	menuBox.style.display = "none";
+
+	var latLng = contextLatLng.toString(); 
+	latLng = latLng.replace('(','');
+	latLng = latLng.replace(')','');
+	
+	var dest = latLng;
+
+	latLng = latLng.split(",");
+	var xmlhttp = new XMLHttpRequest();
+	xmlhttp.onreadystatechange = function() {
+	if (this.readyState == 4 && this.status == 200) {
+			var jsonSpoint = JSON.parse(this.responseText);
+
+			if(contextMenuDpoint!=undefined){
+				contextMenuDpoint.setMap(null);
+			}
+
+
+
+			console.log(jsonSpoint.results);
+			var messageS = jsonSpoint.results[3].formatted_address ; //'You are here';
+			messageS = messageS.replace(",", "");
+			var markerS = new google.maps.Marker({
+					 position: contextLatLng,
+					 map: localmap,
+					 icon:'./img/end.png',
+					title: messageS
+				 });
+
+			globalMarkerMap.push(markerS);
+			contextMenuDpoint=markerS;
+
+			//messageS = messageS.substring(messageS.indexOf(",") + 2);
+			document.getElementById("epoint").value=messageS;
+			document.getElementById("epoint").placeholder=messageS;
+
+			latLng[0].replace(" ","");
+			latLng[1].replace(" ","");
+			dlat = Number(latLng[0]);
+			dlon = Number(latLng[1]);
+			return false;
+		}
+	};
+
+
+	xmlhttp.open("POST",'https://maps.googleapis.com/maps/api/geocode/json?latlng='+ latLng +'&key=AIzaSyDxth0qsM28RlcY8gF8IaPDfBxPRL_GM1I&sensor=true', true);
+	xmlhttp.send();
+
+
+
+	return false;
+}
+
+*/
 function cssDeviceChange( swidth,sheight){
 
 //style="width:100px; max-width:400px;"
