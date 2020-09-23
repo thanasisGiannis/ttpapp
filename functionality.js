@@ -357,14 +357,13 @@ function submitQuery(){
 								 "language":language
 							  };
 
-
 	var jsonData = JSON.stringify(data2backend);
 
 	var xmlhttp = new XMLHttpRequest();
 	xmlhttp.onreadystatechange = function() {
 	if (this.readyState == 4 && this.status == 200) {
+			
 			rawPlanInfo = JSON.parse(this.responseText);
-
 			stop_overs = [];
 			var solution = rawPlanInfo["solution"];
 			var numRoutes = solution.length;
@@ -372,9 +371,9 @@ function submitQuery(){
 				var id   = solution[i].id;
 				var days = solution[i].days;
 				stop_overs.push({"id":id,"days": days});
+				
 			}
 /*******/
-			//console.log(rawPlanInfo);
 			submitQueryPlanTrip(stop_overs);
 			updateOutputInfo(); // update route infos
 /*******/
@@ -573,7 +572,6 @@ function nightsUpdate(id,numDay){
 
 function movePoi(id,place){
 
-
 	var id0 = parseInt(id);
 	var id1 = parseInt(place) + id0;
 
@@ -581,8 +579,10 @@ function movePoi(id,place){
 		return false;
 	}
 
+
 	var tmpDays = stop_overs[id0].days;
 	var tmpId = stop_overs[id0].id;
+
 
 	stop_overs[id0].days = stop_overs[id1].days;
 	stop_overs[id0].id   = stop_overs[id1].id;
@@ -592,9 +592,9 @@ function movePoi(id,place){
 	stop_overs[id1].id   =  tmpId;
 
 
-	submitQueryPlanTrip(stop_overs);
-	updateOutputInfo(); // update route infos
+	partial_solution_explore.compulsory_stop_overs = stop_overs;
 
+	submitQuery();
 
 	return false;
 }
@@ -615,8 +615,8 @@ function insertNodeTourPlan(chosen_departure,days,time,duration,distance,end_dat
 		button.innerHTML =  "<pre style='background-color:inherit;border-style:none;'>" + 
 									//" | " + index + " | " +
 									"\n" + name  +
-									"\n" + start_date  + " until " + end_date +"\n" +
-									"Departure: " + time + " - Distance: "  + distance   + " \nDuration: " + duration + "</pre>" + 
+									"\nFrom:" + start_date  + "\nUntil:" + end_date +"\n" +
+									"Departure: " + time + " \nDistance: "  + distance   + " \nDuration: " + duration + "</pre>" + 
 									"</pre>";
 
 
@@ -662,14 +662,14 @@ function insertNodeTourPlan(chosen_departure,days,time,duration,distance,end_dat
 		btnsGr.appendChild(nightsBtn);
 		//btnsGr.style.borderStyle  = "solid";
 		btnsGr.style.float = 'right';
-		btnsGr.style.width = '81%';
+		btnsGr.style.width = '70%';
 		btnsGr.style.height = '100%';
 		
 
 		var buttonsLeft = document.createElement('div');
 
 		buttonsLeft.innerHTML = "<pre><button type='button' onclick=\"movePoi("+index+",-1);\">/\\</button>\n  " + index + "\n<button type='button' onclick=\"movePoi("+index+",1);\">\\/</button> </pre>";
-		buttonsLeft.style.width = '19%';
+		buttonsLeft.style.width = '30%';
 		buttonsLeft.style.height = '100%';
 		buttonsLeft.style.float = 'left';
 		buttonsLeft.backgroundColor = 'inherit';
@@ -692,7 +692,6 @@ function insertNodeTourPlan(chosen_departure,days,time,duration,distance,end_dat
 
 		document.getElementById("placesPlan").style.paddingBottom='0.5vh';
 		document.getElementById("placesPlan").className = 'container-fluid';
-//		document.getElementById("placesPlan").style.height = '1100px';
 		return false;
 }
 
@@ -790,6 +789,8 @@ function updateRoutePlan(){
 	}
 
 	var numRoutes = routes.length;
+
+//	alert(routes[0].id + "\n" + routes[1].id + "\n" +routes[2].id + "\n" );
 
 	document.getElementById("placesPlan").innerHTML="";
 	for(var i=0; i<numRoutes; i++){

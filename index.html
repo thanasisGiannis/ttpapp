@@ -73,6 +73,7 @@
 					document.getElementById("maxstopovers").onchange=function(){
 							var maxWT = document.getElementById("maxstopovers");
 							maxWT.title= maxWT.value;
+							max_stop_overs = parseInt(maxWT.value);							
 							var headerMaxWT = document.getElementById("headmaxstopovers");
 							headerMaxWT.innerHTML = "Maximum number of stopovers: "+ maxWT.value;
 				}
