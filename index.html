@@ -70,7 +70,7 @@
 				</form>
 
 				<script>
-					document.getElementById("maxstopovers").onchange=function(){
+				document.getElementById("maxstopovers").onchange=function(){
 							var maxWT = document.getElementById("maxstopovers");
 							maxWT.title= maxWT.value;
 							max_stop_overs = parseInt(maxWT.value);							
@@ -109,13 +109,11 @@
 
 			 <! Places Plan>
 				<div style="padding-top=2vh;padding-bottom:2vh;padding-left:0vw;padding-right:0vw;" >
-					<!div id="placesPlan" style="background-color:#FFF;padding-top:0.5vh;" class="btn-group">
 					<div id="placesPlan" style="background-color:#FFF;">
 					<!--h2 id="headerPlacesPlan" align="center" style="color:#FFF"> Places to be listed </h2-->
 						<!--h3> Places to be listed</h3-->
 					</div>
 				</div>
-
 
 		   </div> <! end of placesPlanCol">
 			
@@ -126,23 +124,27 @@
 				</button>
 			</h1>
 				<div style="max-height:inherit;padding-right:1vw;padding-left:1vw;padding-top:3vh;padding-botton:2vh;"><div id="poisPlan" style="max-height:55vh;overflow-y:auto;"></div></div>
+				<div style="max-height:inherit;padding-right:1vw;padding-left:1vw;padding-top:3vh;padding-botton:2vh;"><div id="routePlan" style="max-height:55vh;overflow-y:auto;"></div></div>
 			</div>
 
+<!--
+			<div id="routePlanCol" style="display:none;" >
+			<h1 style='background-colo:white;'>
+				<button type="button" class="close" aria-label="Close" onclick='closeRoutePlan();' style="background-color:#000000;border: none; color: white; padding: 5px 5px; text-align: center; text-decoration: none;  display:inline-block; font-size: 16px;">
+				  <span  aria-hidden="true">&times;</span>
+				</button>
+			</h1>
+				<div style="max-height:inherit;padding-right:1vw;padding-left:1vw;padding-top:3vh;padding-botton:2vh;"><div id="routePlan" style="max-height:55vh;overflow-y:auto;"></div></div>
+			</div>
+-->
 
  		 </div> <! end of column >
 
 
 		 <! Map and Info of places>
 		 <div class="col-sm-6" style="padding-top=2vh;padding-bottom:2vh;padding-left:2vw;padding-right:2vw;">
-
-			<div class="z-depth-1-half map-container-4" style="height:73vh;width:47vw;" id="map"></div>
+			<div style="height:73vh;width:47vw;" id="map"></div>
 			<div style="padding-top=2vh;padding-bottom:1vh;padding-left:2vw;padding-right:2vw;width:47vw;" id="placesInfo"></div>
-
-			<!--div class="menu" id="contextGoogleMapsMenu" style='width:120px;height:40px;'>
-            <div class="menu-item" onclick="sPointSetMenu()">From here</div>
-            <div class="menu-item" onclick="dPointSetMenu()">Towards here</div>
-		   </div-->
-
 		 </div>
 
 		</div> <! end row>

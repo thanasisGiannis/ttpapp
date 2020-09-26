@@ -3,8 +3,15 @@ var localmap;
 var globalMarkerMap=[]; // periexei olous tous markers sto map
 var globalPolyMap=[];   // periexei oles tis polylines sto map
 var poiMarker;
+
+var zoomMapPois;
+var routeMarkerMap=[]; // periexei olous tous markers sto map
+var routelPolyMap=[];   // periexei oles tis polylines sto map
+var queryLeg;
+
 var clat;
 var clon;
+var latlngbounds;
 
 
 var rawPlanInfo = {};
@@ -356,7 +363,6 @@ function submitQuery(){
 								 "partial_solution":partial_solution_explore,
 								 "language":language
 							  };
-
 	var jsonData = JSON.stringify(data2backend);
 
 	var xmlhttp = new XMLHttpRequest();
@@ -406,13 +412,18 @@ function closeInfos(){
 	document.getElementById('placesInfo').innerHTML = "";
 	document.getElementById('placesInfo').height = "0vh";
 
+	
+	document.getElementById('routePlan').innerHTML = "";
+	document.getElementById('routePlan').height = "0vh";
+
 	/* reset map to its original dimensions */
 	document.getElementById('map').style.height= '73vh';
 
 
 	if(poiMarker != undefined){
 		poiMarker.setMap(null);
-	}	
+	}
+	
 	for(var i=0;i<globalMarkerMap.length; i++){
 		globalMarkerMap[i].setMap(localmap);
 	
@@ -424,8 +435,28 @@ function closeInfos(){
 	}
 
 
-	localmap.setCenter(new google.maps.LatLng(clat, clon));
+	for(var i=0;i<routeMarkerMap.length; i++){
+		routeMarkerMap[i].setMap(null);
 	
+	}
+	
+	for(var i=0;i<routelPolyMap.length; i++){
+		routelPolyMap[i].setMap(null);
+	
+	}
+
+		localmap.setCenter(new google.maps.LatLng(clat, clon));
+
+
+		localmap.fitBounds(latlngbounds);
+		
+		var zoom = localmap.getZoom();
+		if(zoom > 17){
+			localmap.setZoom(17);
+		}
+
+
+
 	return false;
 }
 
@@ -456,7 +487,7 @@ function addInfoToPoi(info){
 	mmap.style.height= '30vh';
 
 
-		for(var i=0;i<globalMarkerMap.length; i++){
+	for(var i=0;i<globalMarkerMap.length; i++){
 		globalMarkerMap[i].setMap(null);
 	
 	}
@@ -599,6 +630,570 @@ function movePoi(id,place){
 	return false;
 }
 
+function deletePoi(index){
+
+	partial_solution_explore.excluded_stop_overs.push({"id":stop_overs[index].id});
+	
+	
+	submitQuery();
+	return false;
+}
+
+
+function focusLeg(legNum){
+
+	var legslat;
+	var legslon;
+
+	var legdlat;
+	var legdlon;
+
+	if(legNum==-1){
+		legslat = queryLeg[0].coordinates[0][0];
+		legslon = queryLeg[0].coordinates[0][1];
+
+		if(queryLeg.length > 1){
+			legdlat = queryLeg[queryLeg.length-1].coordinates[0][0];
+			legdlon = queryLeg[queryLeg.length-1].coordinates[0][1];
+		}else{
+			legdlat = queryLeg[0].coordinates[queryLeg[0].coordinates.length-1][0];
+			legdlon = queryLeg[0].coordinates[queryLeg[0].coordinates.length-1][1];
+
+		}
+
+	}else{
+		legslat = queryLeg[legNum].coordinates[0][0];
+		legslon = queryLeg[legNum].coordinates[0][1];
+
+		legdlat = queryLeg[legNum].coordinates[queryLeg[legNum].coordinates.length-1][0];
+		legdlon = queryLeg[legNum].coordinates[queryLeg[legNum].coordinates.length-1][1];
+	}
+	
+	var clat = Math.abs(legslat+legdlat)/2;
+	var clon = Math.abs(legslon+legdlon)/2;
+
+	localmap.setCenter(new google.maps.LatLng(clat, clon));
+	//localmap.setMapTypeId(google.maps.MapTypeId.ROADMAP);
+
+	var latlngb = [
+		 new google.maps.LatLng(legslat, legslon),
+		 new google.maps.LatLng(legdlat, legdlon),
+	]; 
+
+	var latlngbounds = new google.maps.LatLngBounds();
+
+	for (var i = 0; i < latlngb.length; i++) {
+		 latlngbounds.extend(latlngb[i]);
+	}
+	localmap.fitBounds(latlngbounds);
+	
+	var zoom = localmap.getZoom();
+	if(zoom > 17){
+		localmap.setZoom(17);
+	}
+
+	return false;
+}
+
+function addDirections(type,street,arrivalTime,leaveTime,waitTime,streetE,arrivalTimeE, desc, distance, travel_time, walk_time,legNum,total_walk_travel_time){
+
+		var imgSrc = "";
+
+		/* */
+		
+	   leaveTime = toDate(leaveTime);
+		arrivalTime = toDate(arrivalTime);
+		arrivalTimeE = toDate(arrivalTimeE);
+
+
+		walk_time = Number(walk_time);
+		var h = Math.floor(walk_time / 3600);
+		var m = Math.floor(walk_time % 3600 / 60);
+		var hDisplay = h > 0 ? h + (h == 1 ? " hour, " : " hours") : "";
+		var mDisplay = m > 0 ? m + (m == 1 ? " minute, " : " minutes") : "";
+		var outputwalk_time =  hDisplay + mDisplay; 
+
+		
+		travel_time = Number(travel_time);
+		h = Math.floor(travel_time / 3600);
+		m = Math.floor(travel_time % 3600 / 60);
+		hDisplay = h > 0 ? h + (h == 1 ? " hour " : " hours ") : "";
+		mDisplay = m > 0 ? m + (m == 1 ? " minute " : " minutes ") : "";
+		var outputtravel_time =  hDisplay + mDisplay; 
+
+		distance = distance/ 1000;
+		distance = distance.toFixed(1) + "km";
+		//alert( desc + distance+ travel_time+ walk_time);
+		var testing = false;
+		var imageNode = document.createElement('img');
+		if (!testing && type === "walk"){
+			outputMessage = "Walk to "+streetE +
+										 "\nDept. Time: "+leaveTime+ 
+										 "\nTravel Time: "+ outputwalk_time + 
+										 "\nDistance: "+distance;
+
+			
+			imgSrc = './img/walk3ar.png';
+		}else if ( !testing &&  type === "bus" ){
+			//var desc = "Dromologio Tade";
+			outputMessage = desc + " \nBus to " + streetE +
+								 "\nDept. Time: "+leaveTime + " "+
+								 "\nTravel Time: "+ outputtravel_time + 
+								 "\nDistance: "+distance;
+			imgSrc = './img/busar.png';
+		}else if ( !testing &&  type === "car" ){
+			outputMessage = "Drive to " + streetE +
+								 "\nDept. Time: "+leaveTime + " "+
+								 "\nTravel Time: "+ outputtravel_time + 
+								 "\nDistance: "+distance;
+			imgSrc = './img/car2m.png';
+		}else if ( !testing &&  type === "rail" ){
+			//var desc = "Dromologio Tade";
+			outputMessage = desc + " \nRail to " + streetE +
+								 "\nDept. Time: "+leaveTime + " "+
+								 "\nTravel Time: "+ outputtravel_time;
+			imgSrc = './img/trainar.png';
+		}else if ( !testing &&  type === "subway" ){
+			//var desc = "Dromologio Tade";
+			outputMessage = desc + " \nSubway to " + streetE +
+								 "\nDept. Time: "+leaveTime + " "+
+								 "\nTravel Time: "+ outputtravel_time + 
+								 "\nDistance: "+distance;
+			imgSrc = './img/subwayar.png';
+		}else if ( !testing &&  type === "tram" ){
+			//var desc = "Dromologio Tade";
+			outputMessage = desc + " \nTram to " + streetE +
+								 "\nDept. Time: "+leaveTime + " "+
+								 "\nTravel Time: "+ outputtravel_time + 
+								 "\nDistance: "+distance;
+
+			imgSrc = './img/tramar.png';
+		}else if ( !testing &&  type === "ferry" ){
+			//var desc = "Dromologio Tade";
+			outputMessage = desc + " \nFerry to " + streetE +
+								 "\nDept. Time: "+leaveTime + " "+
+								 "\nTravel Time: "+ outputtravel_time + 
+								 "\nDistance: "+distance;
+			imgSrc = './img/ferryar.png';
+		}else if ( !testing &&  type === "trolleybus" ){
+			//var desc = "Dromologio Tade";
+			outputMessage = desc + " \nTorlleybus to " + streetE +
+								 "\nDept. Time: "+leaveTime + " "+
+								 "\nTravel Time: "+ outputtravel_time + 
+								 "\nDistance: "+distance;
+			imgSrc = './img/trolleybusar.png';
+	   }else{
+			outputMessage = "Total Time: " + outputtravel_time + "\nTotal Distance:" + distance + "    ";
+			imgSrc = './img/icons8_route.png';
+		}
+
+
+	
+
+
+	imageNode.src  = imgSrc;
+	imageNode.style.height = '50%';//"9vh";
+	imageNode.style.width  = '20%';//"4vw";
+	imageNode.style.float = "left";
+
+	var textnode = document.createTextNode(outputMessage);
+
+	var spanNode = document.createElement('span');
+	spanNode.className = "inner-pre";
+
+	var swidth = $( window ).width();
+	if ( swidth >= 800 ){
+		spanNode.style.fontSize = "12px";
+	}else{
+		spanNode.style.fontSize = "9px";
+
+	}
+
+	spanNode.id = 'directionsID' + legNum;
+	spanNode.appendChild(textnode);
+
+	if(legNum == -1){
+				var maxWlkTm = 0;
+				var img =  document.createElement('img');
+				if(total_walk_travel_time > maxWlkTm){
+					img.src = "./img/walkintTimeNotOk.png";
+				}else{
+					img.src = "./img/walkingTimeOk.png";
+
+				}
+
+				spanNode.appendChild(img);
+
+	}
+
+
+	var nodeInfo = document.createElement("pre");
+
+	nodeInfo.appendChild(spanNode);      
+
+	nodeInfo.style.float = "center";
+	nodeInfo.style.backgroundColor = "white";
+	nodeInfo.style.borderColor = "white";
+
+
+
+	var node;
+	if(imgSrc == './img/icons8_route.png'){
+		node  = document.createElement('button');
+
+		node.onclick = function(){
+										 focusLeg(-1); return false;
+									  };
+
+	}else{
+		node  = document.createElement('button');
+
+		node.onclick = function(){
+										 focusLeg(legNum); return false;
+									  };
+	}
+
+	node.style.height = "100%";
+	node.style.width  = "100%";
+	node.style.backgroundColor = "white";
+	if(imgSrc != undefined){
+		node.appendChild(imageNode);
+	}
+	node.appendChild(nodeInfo);
+
+	document.getElementById("routePlan").appendChild(node);
+
+
+	document.getElementById('poisPlanCol').style.display = 'block' ;
+	document.getElementById('placesPlanCol').style.display = 'none' ;
+	return false;
+}
+
+function drawLineMap(coordinates,colorMod,putMarkers,street,arrivalTime,leaveTime,waitTime,streetEnd,arrivalTimeEnd,type,StartEnd){
+
+
+	var color;
+
+	switch(colorMod) {
+	  case 'car':
+		color='#66bb6a';
+		break;
+	  case 'rail':
+		color='#607D8B';
+		break;
+	  case 'walk':
+		color='#607D8B';
+		break;
+	  case 'pubcar':
+		color='#607D8B';
+		break;
+	  case '':
+		color='#202020';
+		break;
+	  default:
+		color='#66bb6a';
+	} 
+
+
+
+		var testing = false;
+		var imgSrcS = '';
+		var imgSrcE = '';
+		if (!testing && type === "walk"){
+			imgSrcS = './img/walk3.png';
+			imgSrcE = '';
+		}else if ( !testing &&  type === "bus" ){
+			imgSrcS = './img/bus.png';
+			imgSrcE = '';
+		}else if ( !testing &&  type === "car" ){
+			imgSrcS = './img/car2m.png';
+			imgSrcE = '';
+		}else if ( !testing &&  type === "rail" ){
+			imgSrcS = './img/train.png';
+			imgSrcE = '';
+		}else if ( !testing &&  type === "subway" ){
+			imgSrcS = './img/subway.png';
+			imgSrcE = '';
+		}else if ( !testing &&  type === "tram" ){
+			imgSrcS = './img/tram.png';
+			imgSrcE = '';
+		}else if ( !testing &&  type === "ferry" ){
+			imgSrcS = './img/ferry.png';
+			imgSrcE = '';
+		}else if ( !testing &&  type === "trolleybus" ){
+			imgSrcS = './img/trolleybus.png';
+			imgSrcE = '';
+	   }else{
+			outputMessage = "Total Time to Destination: " + outputtravel_time + "\nTotal Distance to Destination:" + distance;
+//			outputMessage = "From: " + street + " To:" + streetE + " by " + type;
+			imgSrc = undefined;
+		}
+
+
+		if ( !testing &&  StartEnd === "start" ){
+			imgSrcS = './img/start.png';
+		}else if ( !testing &&  StartEnd === "end" ){
+			imgSrcE = './img/end.png'
+		}else if ( !testing &&  StartEnd === "startend" ){
+			imgSrcS = './img/start.png';
+			imgSrcE = './img/end.png'
+		}
+
+
+
+	var route=[];
+	var routeIter = coordinates.length;
+	for (var i=0; i<routeIter; i++){
+		route.push({lat: coordinates[i][0], lng: coordinates[i][1]});
+
+	}
+
+
+	var polyMap = new google.maps.Polyline({
+          path: route,
+          geodesic: true,
+          strokeColor:color,
+          strokeOpacity: 1.0,
+          strokeWeight: 5
+        });
+
+
+ 	
+	if(putMarkers){
+/*
+		if(arrivalTime == 0){
+			arrivalTime = "-";
+			waitTime = "-";
+		}
+*/
+		var messageS = 'Street: ' + street + 
+							'\nArrival Time: '+ toDate(arrivalTime)+
+							'\nLeave Time: '+ toDate(leaveTime)+
+							'\nWait Time: '+ waitTime +
+							'\nTransport: '+ colorMod;
+
+		var myIcon = new google.maps.MarkerImage(imgSrcS);
+		var markerS = new google.maps.Marker({
+			 position: route[0],
+			 map: localmap,
+			 icon:  myIcon,
+			 title: messageS
+		  });
+
+		markerS.icon.scale=20;
+
+		var messageE = 'Street: ' + streetEnd + 
+							'\nArrival Time: '+ toDate(arrivalTimeEnd);
+
+		myIcon = new google.maps.MarkerImage(imgSrcE);
+		var markerE = new google.maps.Marker({
+			 position: route[route.length-1],
+			 map: localmap,
+			 icon: myIcon,
+			 title: messageE
+			
+		  });
+
+		markerE.icon.scale=20;
+
+		markerS.setMap(localmap);
+		markerE.setMap(localmap);
+
+		routeMarkerMap.push(markerS);
+		routeMarkerMap.push(markerE);
+	}
+
+	polyMap.setMap(localmap);
+
+	routelPolyMap.push(polyMap);
+
+	lineExists=1;
+	return false;
+
+}
+
+
+
+function queryRoute_(jsonRoutes){
+
+	// Draw polylines on google map 
+	var numRoutes = jsonRoutes.routes.length; 
+
+	var mainRoute = 0;
+	if(mainRoute>=numRoutes){
+		mainRoute = numRoutes-1;
+	}
+
+	/* Draw lines with colors */
+	var j=mainRoute;
+
+	document.getElementById('routePlan').innerHTML = '';
+
+	numIter = jsonRoutes.routes[j].legs.length;
+	var totalTimeTravel = jsonRoutes.routes[j].travel_time;
+	var totalDistanceTravel = jsonRoutes.routes[j].distance;
+	//alert(totalTimeTravel);
+
+
+	/* find total walking time of the route */
+	total_walk_travel_time=0;
+
+	/* Need to clear map here from polyMap and Markers */
+
+	for(var i=0;i<globalMarkerMap.length; i++){
+		globalMarkerMap[i].setMap(null);
+	
+	}
+	
+	for(var i=0;i<globalPolyMap.length; i++){
+		globalPolyMap[i].setMap(null);
+	
+	}
+
+	
+
+
+	for(var i=0; i<numIter; i++){
+		var type  = jsonRoutes.routes[j].legs[i].type;
+		var travel_time = jsonRoutes.routes[j].legs[i].travel_time;
+	
+		if(type == "walk"){
+			total_walk_travel_time += travel_time;
+			
+		}		
+
+
+	}
+	total_walk_travel_time=total_walk_travel_time/60;
+	addDirections("total","","","","","","","", totalDistanceTravel, totalTimeTravel, "",-1,total_walk_travel_time);
+
+	for(var i=0; i<numIter; i++){
+		var route = jsonRoutes.routes[j].legs[i].coordinates;
+		var type  = jsonRoutes.routes[j].legs[i].type;
+		
+
+		arrivalTime = jsonRoutes.routes[j].legs[i].extra_data[0][1];
+		
+		var waitTime    = jsonRoutes.routes[j].legs[i].extra_data[0][2];//leaveTime-arrivalTime;
+		var leaveTime   = arrivalTime + waitTime;//jsonRoutes.routes[j].legs[i].extra_data[0][1];
+		var street = jsonRoutes.routes[j].legs[i].extra_data[0][0];
+
+
+		var desc = jsonRoutes.routes[j].legs[i].desc;
+		var distance = jsonRoutes.routes[j].legs[i].distance;
+		var travel_time = jsonRoutes.routes[j].legs[i].travel_time;
+		var walk_time = jsonRoutes.routes[j].legs[i].travel_time;
+		var StartEnd = '';
+		if(i==0){
+			arrivalTime=0;
+			StartEnd = 'start';
+		}
+
+		if(i==numIter-1){
+			StartEnd = 'end';
+		}
+
+		if(numIter == 1){
+			StartEnd = 'startend';
+		}
+
+		var streetE = jsonRoutes
+							.routes[j]
+							.legs[i]
+							.extra_data[jsonRoutes.routes[j].legs[i].extra_data.length-1][0];
+
+		var arrivalTimeE = jsonRoutes
+							.routes[j]
+							.legs[i]
+							.extra_data[jsonRoutes.routes[j].legs[i].extra_data.length-1][1];
+
+/* WILL DRAW LINES HERE */
+		drawLineMap(route,type,true,street,arrivalTime,leaveTime,waitTime,streetE,arrivalTimeE,type,StartEnd);
+		addDirections(type,street,arrivalTime,leaveTime,waitTime,streetE,arrivalTimeE, desc, distance, travel_time, walk_time,i,-1);
+		/* add desc, distance, travel_time, walk_time */
+	}
+
+
+	queryLeg = jsonRoutes.routes[j].legs;
+
+	return false;	
+}
+
+
+
+
+function queryRoute(index){
+
+	pplan = plan[index];
+	pplane = plan[(index+1) % (stop_overs.length)];
+
+	var Url = 'http://150.140.143.218:8000/getJourneys/';
+	
+	var lg = 'en';
+
+	var slat = pplan.start_location.lat;
+	var slon = pplan.start_location.lon;
+	var dlat = pplane.start_location.lat;
+	var dlon = pplane.start_location.lon;
+
+	var date = pplan.date.split("-");
+	var timeS = pplan.start.split(":");
+	var ts   = Date.parse(new Date(date[0], date[1], date[2], timeS[0], timeS[1], 0))/1000;
+
+	var timeE = pplan.end.split(":");
+	var te   = Date.parse(new Date(date[0], date[1], date[2], timeE[0], timeE[1], 0))/1000;
+
+	var mod  = 'pub';
+	var obj  = 'multi';
+	var skip = [];
+
+	var inputHttp =      "lg="+lg
+						+"&"+"slat="+slat
+						+"&"+"slon="+slon
+						+"&"+"dlat="+dlat
+						+"&"+"dlon="+dlon
+						+"&"+"ts="+ts
+						+"&"+"te="+te
+						+"&"+"mod="+mod
+						+"&"+"obj="+obj
+						;//+"&"+"skip="+skip;
+
+	
+	var mmrappReq = Url + '?' + inputHttp;
+	
+
+	var xmlhttp = new XMLHttpRequest();
+	xmlhttp.onreadystatechange = function() {
+	if (this.readyState == 4 && this.status == 200) {
+				var jsonRoutes = JSON.parse(this.responseText);
+				var success = jsonRoutes.header.success;
+				
+				if (success==0){
+
+					alert('No route');
+					return false;
+				}
+
+				queryRoute_(jsonRoutes);
+
+			return false;
+		}
+	};
+
+
+	xmlhttp.open("POST", mmrappReq, true);
+	xmlhttp.send();
+
+	return false;
+
+}
+
+function viewRoute(index){
+	
+	queryRoute(index);
+	return false;
+}
+
 function insertNodeTourPlan(chosen_departure,days,time,duration,distance,end_date,hotels,id,location, locked, name, organized_activities, start_date,index){
 
 		var button = document.createElement('button');
@@ -620,7 +1215,7 @@ function insertNodeTourPlan(chosen_departure,days,time,duration,distance,end_dat
 									"</pre>";
 
 
-		button.style.height = "100%";
+		button.style.height = "inherit";
 		button.style.width  = "100%";
 		button.style.backgroundColor  = "inherit";
 		button.onclick = function(){viewPOIS(index);};
@@ -635,6 +1230,9 @@ function insertNodeTourPlan(chosen_departure,days,time,duration,distance,end_dat
 		nightsBtn.style.width  = "100%";
 		nightsBtn.style.backgroundColor  = "inherit";
 		nightsBtn.style.borderStyle  = "none";
+
+//		nightsBtn.style.position='absolute';
+//		nightsBtn.style.bottom = '0';
 		nightsBtn.id = "nightsBtn" + id;
 
 		for(var i=1; i<maxnights+1; i++){
@@ -662,14 +1260,18 @@ function insertNodeTourPlan(chosen_departure,days,time,duration,distance,end_dat
 		btnsGr.appendChild(nightsBtn);
 		//btnsGr.style.borderStyle  = "solid";
 		btnsGr.style.float = 'right';
-		btnsGr.style.width = '70%';
+		btnsGr.style.width = '80%';
 		btnsGr.style.height = '100%';
 		
 
 		var buttonsLeft = document.createElement('div');
+		var routeImg = "./img/rail.png";
 
-		buttonsLeft.innerHTML = "<pre><button type='button' onclick=\"movePoi("+index+",-1);\">/\\</button>\n  " + index + "\n<button type='button' onclick=\"movePoi("+index+",1);\">\\/</button> </pre>";
-		buttonsLeft.style.width = '30%';
+		buttonsLeft.innerHTML = "<div class='wrapper' style='text-align:center;'><button type='button' onclick=\"viewRoute("+index+");\"><img style='width:2vw;height:4vh;background-color:black;'src='"+routeImg+"'></button></div>"
+		buttonsLeft.innerHTML = buttonsLeft.innerHTML +"<pre><button type='button' onclick=\"movePoi("+index+",-1);\">/\\</button>\n  " + index + "\n<button type='button' onclick=\"movePoi("+index+",1);\">\\/</button>"; 
+
+		buttonsLeft.innerHTML = buttonsLeft.innerHTML + "<div class='wrapper' style='text-align:center;'><button type='button' onclick=\"deletePoi("+index+");\"><img src='./img/delete.png'></button></div>"	+"</pre>";
+		buttonsLeft.style.width = '20%';
 		buttonsLeft.style.height = '100%';
 		buttonsLeft.style.float = 'left';
 		buttonsLeft.backgroundColor = 'inherit';
@@ -681,7 +1283,7 @@ function insertNodeTourPlan(chosen_departure,days,time,duration,distance,end_dat
 		wrapperDiv.appendChild(buttonsLeft);
 		wrapperDiv.overflow = 'hidden';	
 		wrapperDiv.className = 'btn-group';
-		wrapperDiv.style.paddingTop ='2vh';
+		wrapperDiv.style.paddingTop ='0vh';
 		wrapperDiv.style.width = '100%';
 
 
@@ -765,7 +1367,7 @@ function routePlanUpdateMap(tourPlanLocations){
 		localmap.setCenter(new google.maps.LatLng(clat, clon));
 
 
-		var latlngbounds = new google.maps.LatLngBounds();
+		latlngbounds = new google.maps.LatLngBounds();
 
 		for (var i = 0; i < latlngb.length; i++) {
 			 latlngbounds.extend(latlngb[i]);
@@ -1084,9 +1686,10 @@ function cssDeviceChange( swidth,sheight){
 
 		$("#map").before($("#placesInfo"));
 		document.getElementById('map').style.width  = '100vw';
-		document.getElementById('map').style.height = '50vh';
+		document.getElementById('map').style.height = '30vh';
 		document.getElementById('placesInfo').style.width  = '100vw';
 
+		document.getElementById('placesInfo').style.maxHeight = '100vh';
 
 		document.getElementById('superPlacesPlanCol').style.maxWidth = '50vw';
 
