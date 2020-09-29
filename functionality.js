@@ -86,6 +86,10 @@ function initDestRegionAutoComplete(){
 		           /*close the list of autocompleted values,
 		           (or any other open lists of autocompleted values:*/
 		           closeAllLists();
+
+						/*---*/
+
+						document.getElementById('searchFormButton').click();
 		       });
 		       a.appendChild(b);
 		     }
@@ -1066,20 +1070,21 @@ function updatePoisButton(pois,index, plansIndex){
 		
 		var poisNode = document.createElement('button');
 		var photo = poi.photo.split(",");
-		poisNode.innerHTML = '<img src='+ photo[0] + ' height="100vh" width="70vw" onError="this.src = \'./img/imgNotFound.png\'" style="float:left; padding-top:1vh;">' +
+		poisNode.innerHTML = '<img src='+ photo[0] + ' height="100vh" width="70vw" onError="this.src = \'./img/imgNotFound.png\'" style="float:left; padding-top:2vh;">' +
 		//poisNode.innerHTML =	'<p style="font-size:15px">' + poi.name +
+									'</br><pre style="font-size:12px;border-style:none;background-color:white;"><b>' + poi.name + '</b>'+
 									'</br>Arrival: ' + poi.arrival_time +
 									'</br>Departure: ' + poi.departure_time +
 									'</br>Duration: ' + dur + ' minutes' + 
 									'</br>Entrance: ' + price +
-									'</br></p>';
+									'</br></pre>';
 
 
 		poisNode.style.position="relative";
 		poisNode.style.backgroundColor="white";
 		poisNode.style.float = "center";
 		poisNode.style.height = "100%";
-		poisNode.style.width  = "65%";
+		poisNode.style.width  = "87%";
 
 
 		var poisId = parseInt(poi["id"]);
@@ -1100,10 +1105,12 @@ function updatePoisButton(pois,index, plansIndex){
 		poiDirBtn.style.backgroundColor="inherit";
 		poiDirBtn.style.float = "right";
 		poiDirBtn.style.height = "inherit";
-		poiDirBtn.style.width  = "35%";
-		poiDirBtn.innerHTML = '<img src="./img/rail.png" style="float:left;">';
+		poiDirBtn.style.width  = "12%";
+		poiDirBtn.style.border = 'none';
+		poiDirBtn.innerHTML = '<img src="./img/rail.png" style="float:left;backgroundSize:100%;">';
 		poiDirBtn.onclick = function(){queryRoutePoi2Poi(pois,index,PoiDate); return false;}
-
+		poiDirBtn.style.transform = "scale(0.3,0.4)";
+		poiDirBtn.style.float = 'right';
 		if(pois.length-1 != index){
 			document.getElementById("poisPlan").appendChild(poiDirBtn);		
 		}	
@@ -2115,8 +2122,6 @@ function insertNodeTourPlan(chosen_departure,days,time,duration,distance,end_dat
 		nightsBtn.style.backgroundColor  = "inherit";
 		nightsBtn.style.borderStyle  = "none";
 
-//		nightsBtn.style.position='absolute';
-//		nightsBtn.style.bottom = '0';
 		nightsBtn.id = "nightsBtn" + id;
 
 		for(var i=1; i<maxnights+1; i++){
@@ -2151,8 +2156,8 @@ function insertNodeTourPlan(chosen_departure,days,time,duration,distance,end_dat
 		var buttonsLeft = document.createElement('div');
 		var routeImg = "./img/rail.png";
 
-		buttonsLeft.innerHTML = "<div class='wrapper' style='text-align:center;'><button type='button' onclick=\"viewRoute("+index+");\"><img style='width:2vw;height:4vh;background-color:black;'src='"+routeImg+"'></button></div>"
-		buttonsLeft.innerHTML = buttonsLeft.innerHTML +"<pre><button type='button' onclick=\"movePoi("+index+",-1);\">/\\</button>\n  " + index + "\n<button type='button' onclick=\"movePoi("+index+",1);\">\\/</button>"; 
+		buttonsLeft.innerHTML = "<div class='wrapper' style='text-align:center;'><button type='button' onclick=\"viewRoute("+index+");\"><img style='width:inherit;height:4vh;background-color:black;'src='"+routeImg+"'></button></div>"
+		buttonsLeft.innerHTML = buttonsLeft.innerHTML +"<pre style='background-color:white;border-style:none;'><button type='button' onclick=\"movePoi("+index+",-1);\">/\\</button>\n  " + index + "\n<button type='button' onclick=\"movePoi("+index+",1);\">\\/</button>"; 
 
 		buttonsLeft.innerHTML = buttonsLeft.innerHTML + "<div class='wrapper' style='text-align:center;'><button type='button' onclick=\"deletePoi("+index+");\"><img src='./img/delete.png'></button></div>"	+"</pre>";
 		buttonsLeft.style.width = '20%';
@@ -2600,6 +2605,7 @@ function cssDeviceChange( swidth,sheight){
 		document.getElementById('edatetime').style.zoom='1';
 
 	}
+	
 
 	document.getElementById('superPlacesPlanCol').style.maxWidth = '100vw';
 
