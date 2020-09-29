@@ -73,7 +73,7 @@
 				document.getElementById("maxstopovers").onchange=function(){
 							var maxWT = document.getElementById("maxstopovers");
 							maxWT.title= maxWT.value;
-							max_stop_overs = parseInt(maxWT.value);							
+							max_stop_overs = parseInt(maxWT.value);	
 							var headerMaxWT = document.getElementById("headmaxstopovers");
 							headerMaxWT.innerHTML = "Maximum number of stopovers: "+ maxWT.value;
 				}
@@ -102,7 +102,7 @@
 				<h2 id="headerTourPlan" align="center" style="color:#FFF"> Tour Plan </h2>
 				<form id="searchForm">
 					<div class="form-group">
-						<input  id="destRegion" type="text" class="form-control" placeholder="Add a destination/region">
+						<input  id="destRegion" type="text" oninput="addDestRegion()" class="form-control" placeholder="Add a destination/region">
 					</div>
 				</form>
 				</div>
@@ -123,8 +123,10 @@
 				  <span  aria-hidden="true">&times;</span>
 				</button>
 			</h1>
-				<div style="max-height:inherit;padding-right:1vw;padding-left:1vw;padding-top:3vh;padding-botton:2vh;"><div id="poisPlan" style="max-height:55vh;overflow-y:auto;"></div></div>
 				<div style="max-height:inherit;padding-right:1vw;padding-left:1vw;padding-top:3vh;padding-botton:2vh;"><div id="routePlan" style="max-height:55vh;overflow-y:auto;"></div></div>
+				<div style="max-height:inherit;padding-right:1vw;padding-left:1vw;padding-top:3vh;padding-botton:2vh;"><div id="poisPlan" style="max-height:55vh;overflow-y:auto;"></div></div>
+				<div style="max-height:inherit;padding-right:1vw;padding-left:1vw;padding-top:3vh;padding-botton:2vh;"><div id="routePois" style="max-height:55vh;overflow-y:auto;"></div></div>
+
 			</div>
 
 <!--
@@ -227,8 +229,7 @@
 
 			
 			<div style="align-content: center; padding-top=3vh;">
-				<h2></h2>
-				<button id="POIsSaveButton" type="submit" class="btn pull-center btn-primary" style="width:100%">Save</button>
+				<button id="POIsSaveButton" type="submit" class="btn pull-center btn-primary" style="width:100%" onclick="savePois()">Save</button>
 			</div>
 
 

@@ -9,6 +9,9 @@ var routeMarkerMap=[]; // periexei olous tous markers sto map
 var routelPolyMap=[];   // periexei oles tis polylines sto map
 var queryLeg;
 
+var routeMarkerMapPoi2Poi=[]; // periexei olous tous markers sto map
+var routelPolyMapPoi2Poi=[];   // periexei oles tis polylines sto map
+
 var clat;
 var clon;
 var latlngbounds;
@@ -38,6 +41,32 @@ var end_visiting_pois_at;
 var partial_solution_plan   = {compulsory_pois: [],excluded_pois: []};
 var partial_solution_explore={compulsory_stop_overs:[],excluded_stop_overs:[]};
 var language;
+
+function addDestRegion(){
+	
+	var dest = document.getElementById('destRegion').value;
+
+	return false;
+}
+
+function savePois(){
+
+	category_preferences={"1":parseInt(document.getElementById("toolTipNature").value),
+								 "2":parseInt(document.getElementById("toolTipMeseusGalleries").value),
+								 "3":parseInt(document.getElementById("toolTipMonumentsLandmarks").value),
+								 "4":parseInt(document.getElementById("toolTipReligiousSites").value),
+								 "5":parseInt(document.getElementById("toolTipPlacesView").value),
+								 "6":parseInt(document.getElementById("toolTipSettlementsNeighborhoods").value)};
+
+	start_visiting_pois_at = document.getElementById("timeDIS").value;
+	end_visiting_pois_at = document.getElementById("timeDIE").value;
+
+
+	closePOIsNav();
+
+	return false;
+}
+
 
 function openPOIsNav() {
 	document.getElementById("POIsSideNav").style.width = "100%";
@@ -174,14 +203,15 @@ function setDefaultDateTime(){
 	/* settings date default */
 	/* --------------------- */
 	var d = new Date();
+	
   	var ms = d.getTime();	
 	var ts = Math.round(ms/1000); // round to nearest second
 
 	var month = parseInt(d.getMonth())+1;
 	var monthA = month;
 
-	var maxDays = parseInt(daysInMonth(d.getMonth(),d.getFullYear()));
-	var day = parseInt(d.getDate());
+	var maxDays = parseInt(daysInMonth(month,d.getFullYear()));
+	var day = parseInt(d.getDate() + " " + d.getFullYear());
 	var dayA = day+3;
 
 	if (parseInt(dayA) > parseInt(maxDays)){
@@ -215,7 +245,6 @@ function setDefaultDateTime(){
 
 	start_date = document.getElementById("dateD").value;
 	end_date = document.getElementById("dateA").value;
-
 	start_time = document.getElementById("timeD").value;
 	end_time = document.getElementById("timeA").value;
 
@@ -344,7 +373,46 @@ function submitQueryPlanTrip(stop_overs){
 
 }
 
+function clearMap(){
 
+	for(var i=0; i<globalMarkerMap.length; i++){
+		globalMarkerMap[i].setMap(null);
+	}
+	globalMarkerMap = [];
+
+	for(var i=0; i<globalPolyMap.length; i++){
+		globalPolyMap[i].setMap(null);
+	}
+	globalPolyMap = [];
+
+
+	for(var i=0; i<routeMarkerMap.length; i++){
+		routeMarkerMap[i].setMap(null);
+	}
+	routeMarkerMap = [];
+
+	for(var i=0; i<routelPolyMap.length; i++){
+		routelPolyMap[i].setMap(null);
+	}
+	routelPolyMap = [];
+
+
+	for(var i=0; i<routeMarkerMapPoi2Poi.length; i++){
+		routeMarkerMapPoi2Poi[i].setMap(null);
+	}
+	routeMarkerMapPoi2Poi = [];
+
+	for(var i=0; i<routelPolyMapPoi2Poi.length; i++){
+		routelPolyMapPoi2Poi[i].setMap(null);
+	}
+	routelPolyMapPoi2Poi = [];
+
+
+	if(poiMarker != undefined){
+		poiMarker.setMap(null);
+	}
+	return false;
+}
 function submitQuery(){
 
 	/* query info to backend */
@@ -368,7 +436,8 @@ function submitQuery(){
 	var xmlhttp = new XMLHttpRequest();
 	xmlhttp.onreadystatechange = function() {
 	if (this.readyState == 4 && this.status == 200) {
-			
+
+	
 			rawPlanInfo = JSON.parse(this.responseText);
 			stop_overs = [];
 			var solution = rawPlanInfo["solution"];
@@ -380,8 +449,11 @@ function submitQuery(){
 				
 			}
 /*******/
+
+			clearMap();
 			submitQueryPlanTrip(stop_overs);
 			updateOutputInfo(); // update route infos
+			closeInfos();
 /*******/
 		}
 	};
@@ -403,19 +475,41 @@ function updateOutputInfo(){
 
 function closeInfos(){
 
-	/* close pois list */
-	document.getElementById("poisPlanCol").style.display="none";
-	document.getElementById("placesPlanCol").style.display="block";
-	document.getElementById("poisPlan").innerHTML="";
 
-	/* close poi info */
-	document.getElementById('placesInfo').innerHTML = "";
-	document.getElementById('placesInfo').height = "0vh";
+
+
+	if(document.getElementById('routePois').style.display == 'block'){
+
+		document.getElementById("poisPlan").style.display="block";
+		document.getElementById("routePois").style.display="none";
+		document.getElementById("routePois").innerHTML = '';
 
 	
-	document.getElementById('routePlan').innerHTML = "";
-	document.getElementById('routePlan').height = "0vh";
+		for(var i=0;i<routeMarkerMapPoi2Poi.length;i++){
+			routeMarkerMapPoi2Poi[i].setMap(null);
+		}
+		routeMarkerMapPoi2Poi=[];
+		for(var i=0;i<routelPolyMapPoi2Poi.length;i++){
+			routelPolyMapPoi2Poi[i].setMap(null);
+		}
+		routelPolyMapPoi2Poi=[];
 
+		document.getElementById("placesInfo").innerHTML = '';
+	}else{
+		/* close pois list */
+		document.getElementById("poisPlanCol").style.display="none";
+		document.getElementById("placesPlanCol").style.display="block";
+		document.getElementById("poisPlan").innerHTML="";
+
+		/* close poi info */
+		document.getElementById('placesInfo').innerHTML = "";
+		document.getElementById('placesInfo').height = "0vh";
+
+		
+		document.getElementById('routePlan').innerHTML = "";
+		document.getElementById('routePlan').height = "0vh";
+
+	}
 	/* reset map to its original dimensions */
 	document.getElementById('map').style.height= '73vh';
 
@@ -445,15 +539,18 @@ function closeInfos(){
 	
 	}
 
-		localmap.setCenter(new google.maps.LatLng(clat, clon));
 
 
-		localmap.fitBounds(latlngbounds);
-		
-		var zoom = localmap.getZoom();
-		if(zoom > 17){
-			localmap.setZoom(17);
-		}
+
+	localmap.setCenter(new google.maps.LatLng(clat, clon));
+
+
+	localmap.fitBounds(latlngbounds);
+	
+	var zoom = localmap.getZoom();
+	if(zoom > 17){
+		localmap.setZoom(17);
+	}
 
 
 
@@ -465,9 +562,18 @@ function addInfoToPoi(info){
 	var placeInfo = document.getElementById('placesInfo');
 
 	placeInfo.innerHTML = '<h2>' + info.name +'</h2>';
+
+	
+	var price = info.price;
+
+	if(price == 0){
+		price = 'Free';
+	}
+
 	placeInfo.innerHTML = placeInfo.innerHTML + '<p><img src='+ info.photo + ' height="120vh" width="120vw" onError="this.src = \'./img/imgNotFound.png\'" style="float:left; padding-top:1vh; padding-right:2vw;">' +
-									'</br>Duration: ' + info.visit_time +
-									'</br>Entrance: ' + info.price +
+									'</br>' + info.address + '</br>' + 
+									'</br>Duration: ' + info.visit_time + ' minutes' + 
+									'</br>Entrance: ' + price +
 									'</br></p>';
 
 
@@ -497,6 +603,26 @@ function addInfoToPoi(info){
 	
 	}
 
+	for(var i=0;i<routeMarkerMap.length;i++){
+		routeMarkerMap[i].setMap(null);
+	}
+
+	for(var i=0;i<routelPolyMap.length;i++){
+		routelPolyMap[i].setMap(null);
+	}
+
+
+
+	for(var i=0;i<routeMarkerMapPoi2Poi.length;i++){
+		routeMarkerMapPoi2Poi[i].setMap(null);
+	}
+
+	for(var i=0;i<routelPolyMapPoi2Poi.length;i++){
+		routelPolyMapPoi2Poi[i].setMap(null);
+	}
+
+	routeMarkerMapPoi2Poi=[];
+	routelPolyMapPoi2Poi=[];
 
 	if(poiMarker != undefined){
 		poiMarker.setMap(null);
@@ -545,17 +671,260 @@ function viewInfosPOIS(id){
 }
 
 
-function updatePoisButton(poi){
+function queryRoutePoi2Poi_(jsonRoutes){
 
 
+	document.getElementById('routePlan').innerHTML = "";
+	document.getElementById('routePlan').height = "0vh";
+	/* reset map to its original dimensions */
+	document.getElementById('map').style.height= '73vh';
+	document.getElementById("placesInfo").innerHTML = '';
+
+
+
+
+
+	// Draw polylines on google map 
+	var numRoutes = jsonRoutes.routes.length; 
+
+	var mainRoute = 0;
+	if(mainRoute>=numRoutes){
+		mainRoute = numRoutes-1;
+	}
+
+	/* Draw lines with colors */
+	var j=mainRoute;
+
+	document.getElementById('routePois').innerHTML = '';
+
+	numIter = jsonRoutes.routes[j].legs.length;
+	var totalTimeTravel = jsonRoutes.routes[j].travel_time;
+	var totalDistanceTravel = jsonRoutes.routes[j].distance;
+	//alert(totalTimeTravel);
+
+
+	/* find total walking time of the route */
+	total_walk_travel_time=0;
+
+	/* Need to clear map here from polyMap and Markers */
+
+	for(var i=0;i<globalMarkerMap.length; i++){
+		globalMarkerMap[i].setMap(null);
+	
+	}
+	
+	for(var i=0;i<globalPolyMap.length; i++){
+		globalPolyMap[i].setMap(null);
+	
+	}
+
+	if(poiMarker!=undefined){
+		poiMarker.setMap(null);
+	}
+
+	for(var i=0;i<routeMarkerMapPoi2Poi.length;i++){
+		routeMarkerMapPoi2Poi[i].setMap(null);
+	}
+	routeMarkerMapPoi2Poi=[];
+
+	for(var i=0;i<routeMarkerMapPoi2Poi.length;i++){
+		routeMarkerMapPoi2Poi[i].setMap(null);
+	}
+	routeMarkerMapPoi2Poi=[];
+
+
+//	return false;
+
+
+	for(var i=0; i<numIter; i++){
+		var type  = jsonRoutes.routes[j].legs[i].type;
+		var travel_time = jsonRoutes.routes[j].legs[i].travel_time;
+	
+		if(type == "walk"){
+			total_walk_travel_time += travel_time;
+			
+		}		
+
+
+	}
+	total_walk_travel_time=total_walk_travel_time/60;
+	addDirectionsPoi2Poi("total","","","","","","","", totalDistanceTravel, totalTimeTravel, "",-1,total_walk_travel_time);
+
+	for(var i=0; i<numIter; i++){
+		var route = jsonRoutes.routes[j].legs[i].coordinates;
+		var type  = jsonRoutes.routes[j].legs[i].type;
+		
+
+		arrivalTime = jsonRoutes.routes[j].legs[i].extra_data[0][1];
+		
+		var waitTime    = jsonRoutes.routes[j].legs[i].extra_data[0][2];//leaveTime-arrivalTime;
+		var leaveTime   = arrivalTime + waitTime;//jsonRoutes.routes[j].legs[i].extra_data[0][1];
+		var street = jsonRoutes.routes[j].legs[i].extra_data[0][0];
+
+
+		var desc = jsonRoutes.routes[j].legs[i].desc;
+		var distance = jsonRoutes.routes[j].legs[i].distance;
+		var travel_time = jsonRoutes.routes[j].legs[i].travel_time;
+		var walk_time = jsonRoutes.routes[j].legs[i].travel_time;
+		var StartEnd = '';
+		if(i==0){
+			arrivalTime=0;
+			StartEnd = 'start';
+		}
+
+		if(i==numIter-1){
+			StartEnd = 'end';
+		}
+
+		if(numIter == 1){
+			StartEnd = 'startend';
+		}
+
+		var streetE = jsonRoutes
+							.routes[j]
+							.legs[i]
+							.extra_data[jsonRoutes.routes[j].legs[i].extra_data.length-1][0];
+
+		var arrivalTimeE = jsonRoutes
+							.routes[j]
+							.legs[i]
+							.extra_data[jsonRoutes.routes[j].legs[i].extra_data.length-1][1];
+
+		/* WILL DRAW LINES HERE */
+		drawLineMapPoi2Poi(route,type,true,street,arrivalTime,leaveTime,waitTime,streetE,arrivalTimeE,type,StartEnd);
+		addDirectionsPoi2Poi(type,street,arrivalTime,leaveTime,waitTime,streetE,arrivalTimeE, desc, distance, travel_time, walk_time,i,-1);
+		/* add desc, distance, travel_time, walk_time */
+	}
+
+
+	queryLeg = jsonRoutes.routes[j].legs;
+
+	return false;	
+}
+
+
+
+
+
+function queryRoutePoi2Poi(pois,index,poiDate){
+
+
+
+	if(pois.length == index+1){
+		return false;
+	}
+
+
+	console.log(pois[index]);
+//	return false;
+	pplan = pois[index];
+	pplane = pois[(index+1)];
+
+	var Url = 'http://150.140.143.218:8000/getJourneys/';
+	
+	var lg = 'en';
+
+	var slat = pplan.location.lat;
+	var slon = pplan.location.lon;
+	var dlat = pplane.location.lat;
+	var dlon = pplane.location.lon;
+
+
+
+//	console.log(poiDate);
+//	return false;
+
+	var date = poiDate.split("-");
+	var timeS = pplan.arrival_time.split(":");
+	var ts   = Date.parse(new Date(date[0], date[1], date[2], timeS[0], timeS[1], 0))/1000;
+
+	var timeE = pplan.departure_time.split(":");
+	var te   = Date.parse(new Date(date[0], date[1], date[2], timeE[0], timeE[1], 0))/1000;
+
+	var mod  = 'pub';
+
+	var ldmod =  document.getElementById("privateTransCheckBox");
+	if(ldmod.checked == true){
+		mod  = 'car'; 
+	}
+
+
+	var obj  = 'minTran';
+	var skip = [];
+
+	var inputHttp =      "lg="+lg
+						+"&"+"slat="+slat
+						+"&"+"slon="+slon
+						+"&"+"dlat="+dlat
+						+"&"+"dlon="+dlon
+						+"&"+"ts="+ts
+						+"&"+"te="+te
+						+"&"+"mod="+mod
+						+"&"+"obj="+obj
+						+"&"+"skip="+skip;
+
+	
+	var mmrappReq = Url + '?' + inputHttp;
+	
+
+	var xmlhttp = new XMLHttpRequest();
+	xmlhttp.onreadystatechange = function() {
+	if (this.readyState == 4 && this.status == 200) {
+				var jsonRoutes = JSON.parse(this.responseText);
+				var success = jsonRoutes.header.success;
+
+				if (success==0){
+					alert('No route');
+					return false;
+				}
+
+
+//				document.getElementById('routePois').innerHTML = '';
+				queryRoutePoi2Poi_(jsonRoutes);
+//				document.getElementById('poisPlan').style.display='none';
+//				document.getElementById('routePois').style.display='block';
+
+			return false;
+		}
+	};
+
+
+	xmlhttp.open("POST", mmrappReq, true);
+	xmlhttp.send();
+
+	return false;
+
+}
+
+
+function updatePoisButton(pois,index, plansIndex){
+
+		var poi = pois[index];
+		var price = poi.price;
+
+		if(price == 0){
+			price = 'Free';
+		}
+
+		console.log(pois);
+		var PoiDate = plan[plansIndex].date;
+	
+		console.log(PoiDate);
+
+		var arrTime = poi.arrival_time.split(':');
+		var depTime = poi.departure_time.split(':');
+		var durationMin = parseInt(depTime[1])-parseInt(arrTime[1]);
+		var durationHour = parseInt(depTime[0])-parseInt(arrTime[0]);;
+		var dur = durationHour*60 + durationMin;
+		
 		var poisNode = document.createElement('button');
 		var photo = poi.photo.split(",");
 		poisNode.innerHTML = '<img src='+ photo[0] + ' height="100vh" width="70vw" onError="this.src = \'./img/imgNotFound.png\'" style="float:left; padding-top:1vh;">' +
-									'<p style="font-size:15px">' + poi.name +
+		//poisNode.innerHTML =	'<p style="font-size:15px">' + poi.name +
 									'</br>Arrival: ' + poi.arrival_time +
 									'</br>Departure: ' + poi.departure_time +
-									'</br>Duration: ' + '-' +
-									'</br>Entrance: ' + poi.price +
+									'</br>Duration: ' + dur + ' minutes' + 
+									'</br>Entrance: ' + price +
 									'</br></p>';
 
 
@@ -563,7 +932,7 @@ function updatePoisButton(poi){
 		poisNode.style.backgroundColor="white";
 		poisNode.style.float = "center";
 		poisNode.style.height = "100%";
-		poisNode.style.width  = "100%";
+		poisNode.style.width  = "65%";
 
 
 		var poisId = parseInt(poi["id"]);
@@ -573,6 +942,25 @@ function updatePoisButton(poi){
 								 };
 
 		document.getElementById("poisPlan").appendChild(poisNode);		
+
+
+
+		poiDirBtn = document.createElement('BUTTON');
+		
+
+		poiDirBtn.style.display= "inline-block";
+		poiDirBtn.style.position="relative";
+		poiDirBtn.style.backgroundColor="inherit";
+		poiDirBtn.style.float = "right";
+		poiDirBtn.style.height = "inherit";
+		poiDirBtn.style.width  = "35%";
+		poiDirBtn.innerHTML = '<img src="./img/rail.png" style="float:left;">';
+		poiDirBtn.onclick = function(){queryRoutePoi2Poi(pois,index,PoiDate); return false;}
+
+		if(pois.length-1 != index){
+			document.getElementById("poisPlan").appendChild(poiDirBtn);		
+		}	
+
 }
 
 function viewPOIS(index){
@@ -581,8 +969,10 @@ function viewPOIS(index){
 	
 	var pois = plan[index].pois;
 
+
+	console.log(pois);
 	for(var i=0;i<pois.length; i++){
-		updatePoisButton(pois[i]);
+		updatePoisButton(pois,i,index);
 	}
 
 	document.getElementById("poisPlanCol").style.display="block";
@@ -1014,6 +1404,326 @@ function drawLineMap(coordinates,colorMod,putMarkers,street,arrivalTime,leaveTim
 
 
 
+function drawLineMapPoi2Poi(coordinates,colorMod,putMarkers,street,arrivalTime,leaveTime,waitTime,streetEnd,arrivalTimeEnd,type,StartEnd){
+
+
+	var color;
+
+	switch(colorMod) {
+	  case 'car':
+		color='#66bb6a';
+		break;
+	  case 'rail':
+		color='#607D8B';
+		break;
+	  case 'walk':
+		color='#607D8B';
+		break;
+	  case 'pubcar':
+		color='#607D8B';
+		break;
+	  case '':
+		color='#202020';
+		break;
+	  default:
+		color='#66bb6a';
+	} 
+
+
+
+		var testing = false;
+		var imgSrcS = '';
+		var imgSrcE = '';
+		if (!testing && type === "walk"){
+			imgSrcS = './img/walk3.png';
+			imgSrcE = '';
+		}else if ( !testing &&  type === "bus" ){
+			imgSrcS = './img/bus.png';
+			imgSrcE = '';
+		}else if ( !testing &&  type === "car" ){
+			imgSrcS = './img/car2m.png';
+			imgSrcE = '';
+		}else if ( !testing &&  type === "rail" ){
+			imgSrcS = './img/train.png';
+			imgSrcE = '';
+		}else if ( !testing &&  type === "subway" ){
+			imgSrcS = './img/subway.png';
+			imgSrcE = '';
+		}else if ( !testing &&  type === "tram" ){
+			imgSrcS = './img/tram.png';
+			imgSrcE = '';
+		}else if ( !testing &&  type === "ferry" ){
+			imgSrcS = './img/ferry.png';
+			imgSrcE = '';
+		}else if ( !testing &&  type === "trolleybus" ){
+			imgSrcS = './img/trolleybus.png';
+			imgSrcE = '';
+	   }else{
+			outputMessage = "Total Time to Destination: " + outputtravel_time + "\nTotal Distance to Destination:" + distance;
+//			outputMessage = "From: " + street + " To:" + streetE + " by " + type;
+			imgSrc = undefined;
+		}
+
+
+		if ( !testing &&  StartEnd === "start" ){
+			imgSrcS = './img/start.png';
+		}else if ( !testing &&  StartEnd === "end" ){
+			imgSrcE = './img/end.png'
+		}else if ( !testing &&  StartEnd === "startend" ){
+			imgSrcS = './img/start.png';
+			imgSrcE = './img/end.png'
+		}
+
+
+
+	var route=[];
+	var routeIter = coordinates.length;
+	for (var i=0; i<routeIter; i++){
+		route.push({lat: coordinates[i][0], lng: coordinates[i][1]});
+
+	}
+
+
+	var polyMap = new google.maps.Polyline({
+          path: route,
+          geodesic: true,
+          strokeColor:color,
+          strokeOpacity: 1.0,
+          strokeWeight: 5
+        });
+
+
+ 	
+	if(putMarkers){
+/*
+		if(arrivalTime == 0){
+			arrivalTime = "-";
+			waitTime = "-";
+		}
+*/
+		var messageS = 'Street: ' + street + 
+							'\nArrival Time: '+ toDate(arrivalTime)+
+							'\nLeave Time: '+ toDate(leaveTime)+
+							'\nWait Time: '+ waitTime +
+							'\nTransport: '+ colorMod;
+
+		var myIcon = new google.maps.MarkerImage(imgSrcS);
+		var markerS = new google.maps.Marker({
+			 position: route[0],
+			 map: localmap,
+			 icon:  myIcon,
+			 title: messageS
+		  });
+
+		markerS.icon.scale=20;
+
+		var messageE = 'Street: ' + streetEnd + 
+							'\nArrival Time: '+ toDate(arrivalTimeEnd);
+
+		myIcon = new google.maps.MarkerImage(imgSrcE);
+		var markerE = new google.maps.Marker({
+			 position: route[route.length-1],
+			 map: localmap,
+			 icon: myIcon,
+			 title: messageE
+			
+		  });
+
+		markerE.icon.scale=20;
+
+		markerS.setMap(localmap);
+		markerE.setMap(localmap);
+
+		routeMarkerMapPoi2Poi.push(markerS);
+		routeMarkerMapPoi2Poi.push(markerE);
+	}
+
+	polyMap.setMap(localmap);
+
+	routelPolyMapPoi2Poi.push(polyMap);
+
+	lineExists=1;
+	return false;
+
+}
+
+
+
+function addDirectionsPoi2Poi(type,street,arrivalTime,leaveTime,waitTime,streetE,arrivalTimeE, desc, distance, travel_time, walk_time,legNum,total_walk_travel_time){
+
+		var imgSrc = "";
+
+		/* */
+		
+	   leaveTime = toDate(leaveTime);
+		arrivalTime = toDate(arrivalTime);
+		arrivalTimeE = toDate(arrivalTimeE);
+
+
+		walk_time = Number(walk_time);
+		var h = Math.floor(walk_time / 3600);
+		var m = Math.floor(walk_time % 3600 / 60);
+		var hDisplay = h > 0 ? h + (h == 1 ? " hour, " : " hours") : "";
+		var mDisplay = m > 0 ? m + (m == 1 ? " minute, " : " minutes") : "";
+		var outputwalk_time =  hDisplay + mDisplay; 
+
+		
+		travel_time = Number(travel_time);
+		h = Math.floor(travel_time / 3600);
+		m = Math.floor(travel_time % 3600 / 60);
+		hDisplay = h > 0 ? h + (h == 1 ? " hour " : " hours ") : "";
+		mDisplay = m > 0 ? m + (m == 1 ? " minute " : " minutes ") : "";
+		var outputtravel_time =  hDisplay + mDisplay; 
+
+		distance = distance/ 1000;
+		distance = distance.toFixed(1) + "km";
+		//alert( desc + distance+ travel_time+ walk_time);
+		var testing = false;
+		var imageNode = document.createElement('img');
+		if (!testing && type === "walk"){
+			outputMessage = "Walk to "+streetE +
+										 "\nDept. Time: "+leaveTime+ 
+										 "\nTravel Time: "+ outputwalk_time + 
+										 "\nDistance: "+distance;
+
+			
+			imgSrc = './img/walk3ar.png';
+		}else if ( !testing &&  type === "bus" ){
+			//var desc = "Dromologio Tade";
+			outputMessage = desc + " \nBus to " + streetE +
+								 "\nDept. Time: "+leaveTime + " "+
+								 "\nTravel Time: "+ outputtravel_time + 
+								 "\nDistance: "+distance;
+			imgSrc = './img/busar.png';
+		}else if ( !testing &&  type === "car" ){
+			outputMessage = "Drive to " + streetE +
+								 "\nDept. Time: "+leaveTime + " "+
+								 "\nTravel Time: "+ outputtravel_time + 
+								 "\nDistance: "+distance;
+			imgSrc = './img/car2m.png';
+		}else if ( !testing &&  type === "rail" ){
+			//var desc = "Dromologio Tade";
+			outputMessage = desc + " \nRail to " + streetE +
+								 "\nDept. Time: "+leaveTime + " "+
+								 "\nTravel Time: "+ outputtravel_time;
+			imgSrc = './img/trainar.png';
+		}else if ( !testing &&  type === "subway" ){
+			//var desc = "Dromologio Tade";
+			outputMessage = desc + " \nSubway to " + streetE +
+								 "\nDept. Time: "+leaveTime + " "+
+								 "\nTravel Time: "+ outputtravel_time + 
+								 "\nDistance: "+distance;
+			imgSrc = './img/subwayar.png';
+		}else if ( !testing &&  type === "tram" ){
+			//var desc = "Dromologio Tade";
+			outputMessage = desc + " \nTram to " + streetE +
+								 "\nDept. Time: "+leaveTime + " "+
+								 "\nTravel Time: "+ outputtravel_time + 
+								 "\nDistance: "+distance;
+
+			imgSrc = './img/tramar.png';
+		}else if ( !testing &&  type === "ferry" ){
+			//var desc = "Dromologio Tade";
+			outputMessage = desc + " \nFerry to " + streetE +
+								 "\nDept. Time: "+leaveTime + " "+
+								 "\nTravel Time: "+ outputtravel_time + 
+								 "\nDistance: "+distance;
+			imgSrc = './img/ferryar.png';
+		}else if ( !testing &&  type === "trolleybus" ){
+			//var desc = "Dromologio Tade";
+			outputMessage = desc + " \nTorlleybus to " + streetE +
+								 "\nDept. Time: "+leaveTime + " "+
+								 "\nTravel Time: "+ outputtravel_time + 
+								 "\nDistance: "+distance;
+			imgSrc = './img/trolleybusar.png';
+	   }else{
+			outputMessage = "Total Time: " + outputtravel_time + "\nTotal Distance:" + distance + "    ";
+			imgSrc = './img/icons8_route.png';
+		}
+
+
+	
+
+
+	imageNode.src  = imgSrc;
+	imageNode.style.height = '50%';//"9vh";
+	imageNode.style.width  = '20%';//"4vw";
+	imageNode.style.float = "left";
+
+	var textnode = document.createTextNode(outputMessage);
+
+	var spanNode = document.createElement('span');
+	spanNode.className = "inner-pre";
+
+	var swidth = $( window ).width();
+	if ( swidth >= 800 ){
+		spanNode.style.fontSize = "12px";
+	}else{
+		spanNode.style.fontSize = "9px";
+
+	}
+
+	spanNode.id = 'directionsID' + legNum;
+	spanNode.appendChild(textnode);
+
+	if(legNum == -1){
+				var maxWlkTm = 0;
+				var img =  document.createElement('img');
+				if(total_walk_travel_time > maxWlkTm){
+					img.src = "./img/walkintTimeNotOk.png";
+				}else{
+					img.src = "./img/walkingTimeOk.png";
+
+				}
+
+				spanNode.appendChild(img);
+
+	}
+
+
+	var nodeInfo = document.createElement("pre");
+
+	nodeInfo.appendChild(spanNode);      
+
+	nodeInfo.style.float = "center";
+	nodeInfo.style.backgroundColor = "white";
+	nodeInfo.style.borderColor = "white";
+
+
+
+	var node;
+	if(imgSrc == './img/icons8_route.png'){
+		node  = document.createElement('button');
+
+		node.onclick = function(){
+										 focusLeg(-1); return false;
+									  };
+
+	}else{
+		node  = document.createElement('button');
+
+		node.onclick = function(){
+										 focusLeg(legNum); return false;
+									  };
+	}
+
+	node.style.height = "100%";
+	node.style.width  = "100%";
+	node.style.backgroundColor = "white";
+	if(imgSrc != undefined){
+		node.appendChild(imageNode);
+	}
+	node.appendChild(nodeInfo);
+
+	document.getElementById("routePois").appendChild(node);
+
+
+	document.getElementById('routePois').style.display = 'block' ;
+	document.getElementById('poisPlan').style.display = 'none' ;
+	return false;
+}
+
+
 function queryRoute_(jsonRoutes){
 
 	// Draw polylines on google map 
@@ -1051,7 +1761,14 @@ function queryRoute_(jsonRoutes){
 	}
 
 	
-
+	for(var i=0;i<routeMarkerMapPoi2Poi.length;i++){
+		routeMarkerMap[i].setMap(null);
+	}
+	routeMarkerMapPoi2Poi=[];
+	for(var i=0;i<routelPolyMapPoi2Poi.length;i++){
+		routelPolyMap[i].setMap(null);
+	}
+	routelPolyMapPoi2Poi=[];
 
 	for(var i=0; i<numIter; i++){
 		var type  = jsonRoutes.routes[j].legs[i].type;
@@ -1120,7 +1837,10 @@ function queryRoute_(jsonRoutes){
 }
 
 
-
+function queryRoutePois(){
+	
+	return false;
+}
 
 function queryRoute(index){
 
@@ -1144,7 +1864,14 @@ function queryRoute(index){
 	var te   = Date.parse(new Date(date[0], date[1], date[2], timeE[0], timeE[1], 0))/1000;
 
 	var mod  = 'pub';
-	var obj  = 'multi';
+
+	var ldmod =  document.getElementById("privateTransCheckBox");
+	if(ldmod.checked == true){
+		mod  = 'car'; 
+	}
+
+
+	var obj  = 'minTran';
 	var skip = [];
 
 	var inputHttp =      "lg="+lg
@@ -1156,7 +1883,7 @@ function queryRoute(index){
 						+"&"+"te="+te
 						+"&"+"mod="+mod
 						+"&"+"obj="+obj
-						;//+"&"+"skip="+skip;
+						+"&"+"skip="+skip;
 
 	
 	var mmrappReq = Url + '?' + inputHttp;
