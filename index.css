@@ -160,6 +160,21 @@ img.logoHeader {
   text-align: center;
 }
 
+
+
+
+
+
+
+.autocomplete-active {
+  /*when navigating through the items using the arrow keys:*/
+  background-color: green !important;
+  color: white;
+}
+
+
+
+
 </style>
 
 
