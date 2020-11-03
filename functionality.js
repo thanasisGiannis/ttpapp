@@ -644,6 +644,13 @@ function closeInfos(){
 		routelPolyMapPoi2Poi=[];
 
 		document.getElementById("placesInfo").innerHTML = '';
+
+		document.getElementById('placesInfo').height = "0vh";
+
+		
+		document.getElementById('routePlan').innerHTML = "";
+		document.getElementById('routePlan').height = "0vh";
+
 	}else{
 		/* close pois list */
 		document.getElementById("poisPlanCol").style.display="none";
@@ -897,7 +904,12 @@ function queryRoutePoi2Poi_(jsonRoutes){
 
 	}
 	total_walk_travel_time=total_walk_travel_time/60;
-	addDirectionsPoi2Poi("total","","","","","","","", totalDistanceTravel, totalTimeTravel, "",-1,total_walk_travel_time);
+	
+	var deptTime = jsonRoutes.routes[j].legs[0].extra_data[0][1];
+	var arrTime  = jsonRoutes.routes[j].legs[numIter-1].extra_data[jsonRoutes.routes[j].legs[numIter-1].extra_data.length-1][1];
+	addDirections("total","",deptTime,arrTime,"","","","", totalDistanceTravel, totalTimeTravel, "",-1,total_walk_travel_time);
+
+//	addDirectionsPoi2Poi("total","","","","","","","", totalDistanceTravel, totalTimeTravel, "",-1,total_walk_travel_time);
 
 	for(var i=0; i<numIter; i++){
 		var route = jsonRoutes.routes[j].legs[i].coordinates;
@@ -1325,7 +1337,8 @@ function addDirections(type,street,arrivalTime,leaveTime,waitTime,streetE,arriva
 								 "\nDistance: "+distance;
 			imgSrc = './img/trolleybusar.png';
 	   }else{
-			outputMessage = "Total Time: " + outputtravel_time + "\nTotal Distance:" + distance + "    ";
+ 			outputMessage = "Dept.Time: " + arrivalTime + " | Arr.Time: " + leaveTime +"\nTotal Time: " + outputtravel_time + "\nTotal Distance:" + distance + "\n" +"  \n";
+			//outputMessage = "Total Time: " + outputtravel_time + "\nTotal Distance:" + distance + "    ";
 			imgSrc = './img/icons8_route.png';
 		}
 
@@ -1491,6 +1504,8 @@ function drawLineMap(coordinates,colorMod,putMarkers,street,arrivalTime,leaveTim
 	}
 
 
+
+
 	var polyMap = new google.maps.Polyline({
           path: route,
           geodesic: true,
@@ -1498,7 +1513,6 @@ function drawLineMap(coordinates,colorMod,putMarkers,street,arrivalTime,leaveTim
           strokeOpacity: 1.0,
           strokeWeight: 5
         });
-
 
  	
 	if(putMarkers){
@@ -1636,6 +1650,42 @@ function drawLineMapPoi2Poi(coordinates,colorMod,putMarkers,street,arrivalTime,l
 	}
 
 
+	var polyMap;
+	
+	if(colorMod == 'walk'){
+	
+		const lineSymbol = {
+								 path: "M 0,-1 0,1",
+								 strokeOpacity: 1,
+								 scale: 4,
+			  		          strokeWeight: 5
+							  };
+	
+		polyMap = new google.maps.Polyline({
+          	path: route,
+          	strokeColor:color,
+				strokeOpacity: 0,
+					 icons: [
+						{
+						  icon: lineSymbol,
+						  offset: "0",
+						  repeat: "30px",
+						},
+					 ],
+        });
+
+	}else{
+		polyMap = new google.maps.Polyline({
+		       path: route,
+		       geodesic: true,
+		       strokeColor:color,
+		       strokeOpacity: 1.0,
+		       strokeWeight: 5
+		     });
+
+	}
+
+/*
 	var polyMap = new google.maps.Polyline({
           path: route,
           geodesic: true,
@@ -1644,7 +1694,7 @@ function drawLineMapPoi2Poi(coordinates,colorMod,putMarkers,street,arrivalTime,l
           strokeWeight: 5
         });
 
-
+*/
  	
 	if(putMarkers){
 /*
