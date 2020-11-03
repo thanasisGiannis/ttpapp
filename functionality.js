@@ -159,7 +159,6 @@ function getDestRegionPlaces(){
 	var xmlhttp = new XMLHttpRequest();
 	xmlhttp.onreadystatechange = function() {
 	if (this.readyState == 4 && this.status == 200) {
-			console.log(this.responseText);
 			addDestRegionPlaces = JSON.parse(this.responseText);
 
 			for(var i=0; i<addDestRegionPlaces.length; i++){
@@ -168,7 +167,6 @@ function getDestRegionPlaces(){
 			}
 
 			initDestRegionAutoComplete();
-			console.log(nameDestRegionPlaces);
 		}
 	};
 	
@@ -590,7 +588,6 @@ function submitQuery(){
 	xmlhttp.onreadystatechange = function() {
 	if (this.readyState == 4 && this.status == 200) {
 
-			console.log(this.responseText);
 			rawPlanInfo = JSON.parse(this.responseText);
 			stop_overs = [];
 			var solution = rawPlanInfo["solution"];
@@ -967,12 +964,10 @@ function queryRoutePoi2Poi(pois,index,poiDate){
 	}
 
 
-	console.log(pois[index]);
-//	return false;
 	pplan = pois[index];
 	pplane = pois[(index+1)];
 
-	var Url = 'http://150.140.143.218:8000/getJourneys/';
+	var Url = 'http://mmrp.interreginvestment.eu:8000/getRoute/';
 	
 	var lg = 'en';
 
@@ -983,8 +978,6 @@ function queryRoutePoi2Poi(pois,index,poiDate){
 
 
 
-//	console.log(poiDate);
-//	return false;
 
 	var date = poiDate.split("-");
 	var timeS = pplan.arrival_time.split(":");
@@ -1058,10 +1051,8 @@ function updatePoisButton(pois,index, plansIndex){
 			price = 'Free';
 		}
 
-		console.log(pois);
 		var PoiDate = plan[plansIndex].date;
 	
-		console.log(PoiDate);
 
 		var arrTime = poi.arrival_time.split(':');
 		var depTime = poi.departure_time.split(':');
@@ -1125,7 +1116,6 @@ function viewPOIS(index){
 	var pois = plan[index].pois;
 
 
-	console.log(pois);
 	for(var i=0;i<pois.length; i++){
 		updatePoisButton(pois,i,index);
 	}
@@ -1138,8 +1128,6 @@ function viewPOIS(index){
 
 function nightsUpdate(id,numDay){
 
-	console.log(id);
-	console.log(partial_solution_explore);
 	for(var i=0;i<partial_solution_explore.compulsory_stop_overs.length; i++){
 			if(partial_solution_explore.compulsory_stop_overs[i].id == id){
 				partial_solution_explore.compulsory_stop_overs.splice(i,1);
@@ -1150,7 +1138,6 @@ function nightsUpdate(id,numDay){
 	partial_solution_explore.compulsory_stop_overs = [];
 	partial_solution_explore.compulsory_stop_overs.push({"id":id,"days":parseInt(numDay)});
 
-	console.log(partial_solution_explore);
 	document.getElementById("searchFormButton").click();
 	return false;
 }
@@ -2012,7 +1999,7 @@ function queryRoute(index){
 	pplan = plan[index];
 	pplane = plan[(index+1) % (stop_overs.length)];
 
-	var Url = 'http://150.140.143.218:8000/getJourneys/';
+	var Url = 'http://mmrp.interreginvestment.eu:8000/getRoute/';
 	
 	var lg = 'en';
 
@@ -2101,7 +2088,7 @@ function insertNodeTourPlan(chosen_departure,days,time,duration,distance,end_dat
 
 		button.innerHTML =  "<pre style='background-color:inherit;border-style:none;'>" + 
 									//" | " + index + " | " +
-									"\n" + name  +
+									"\n" +  index + " " + name  +
 									"\nFrom:" + start_date  + "\nUntil:" + end_date +"\n" +
 									"Departure: " + time + " \nDistance: "  + distance   + " \nDuration: " + duration + "</pre>" + 
 									"</pre>";
@@ -2157,10 +2144,10 @@ function insertNodeTourPlan(chosen_departure,days,time,duration,distance,end_dat
 		var buttonsLeft = document.createElement('div');
 		var routeImg = "./img/rail.png";
 
-		buttonsLeft.innerHTML = "<div class='wrapper' style='text-align:center;'><button type='button' onclick=\"viewRoute("+index+");\"><img style='width:inherit;height:4vh;background-color:black;'src='"+routeImg+"'></button></div>"
-		buttonsLeft.innerHTML = buttonsLeft.innerHTML +"<pre style='background-color:white;border-style:none;'><button type='button' onclick=\"movePoi("+index+",-1);\">/\\</button>\n  " + index + "\n<button type='button' onclick=\"movePoi("+index+",1);\">\\/</button>"; 
+		buttonsLeft.innerHTML = "<div class='wrapper' style='text-align:center;'><button type='button' style='border-style:solid;' onclick=\"viewRoute("+index+");\"><img style='width:inherit;height:4vh;background-color:black;'src='"+routeImg+"'></button></div>"
+		buttonsLeft.innerHTML = buttonsLeft.innerHTML +"<pre style='background-color:white;border-style:none;'><button type='button' style='border-style:solid;' onclick=\"movePoi("+index+",-1);\"><img src='./img/up_button.png'></button>\n  " + "\n<button type='button' style='border-style:solid;' onclick=\"movePoi("+index+",1);\"><img src='./img/down_button.png'></button>"; 
 
-		buttonsLeft.innerHTML = buttonsLeft.innerHTML + "<div class='wrapper' style='text-align:center;'><button type='button' onclick=\"deletePoi("+index+");\"><img src='./img/delete.png'></button></div>"	+"</pre>";
+		buttonsLeft.innerHTML = buttonsLeft.innerHTML + "<div class='wrapper' style='text-align:center;'><button type='button' style='border-style:solid;' onclick=\"deletePoi("+index+");\"><img src='./img/delete.png'></button></div>"	+"</pre>";
 		buttonsLeft.style.width = '20%';
 		buttonsLeft.style.height = '100%';
 		buttonsLeft.style.float = 'left';
