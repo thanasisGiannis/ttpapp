@@ -45,6 +45,37 @@ var language;
 var addDestRegionPlaces=[];
 var nameDestRegionPlaces=[];
 
+function changeLang(){
+
+   var englg =  document.getElementById("englLang");
+	var grlg  =  document.getElementById("grLang");
+	var itlg  =  document.getElementById("itLang");
+
+
+	if(englg.checked == true){
+		language  = 'English'; 
+	}
+	if(grlg.checked == true){
+		language  = 'Greek';
+	}
+
+	if(itlg.checked == true){
+		language  = 'Italian';
+	}
+	
+	$('#langModal').modal('hide');
+	
+/*
+   console.log(document.getElementById("spoint").value.length );
+	console.log(document.getElementById("epoint").value.length );
+*/
+ 	if(document.getElementById("spoint").value.length > 0 &&  document.getElementById("epoint").value.length > 0){
+		submitQuery();
+	}
+
+	return false;
+}
+
 
 function initDestRegionAutoComplete(){
 
@@ -412,7 +443,7 @@ function spointUpdate(){
 	}
 
 
-	var googleURL = 'https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyDxth0qsM28RlcY8gF8IaPDfBxPRL_GM1I'
+	var googleURL = 'https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyBw-BW9w0Cxt0WC2AC2EaF3lNiv3ArachM'
 
 	var spointVal = document.getElementById("spoint").value;
 
@@ -442,7 +473,7 @@ function epointUpdate(){
 	}
 
 
-	var googleURL = 'https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyDxth0qsM28RlcY8gF8IaPDfBxPRL_GM1I'
+	var googleURL = 'https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyBw-BW9w0Cxt0WC2AC2EaF3lNiv3ArachM'
 
 	var epointVal = document.getElementById("epoint").value;
 	var googleURL1 = googleURL + '&address=' + epointVal;
@@ -482,6 +513,7 @@ function submitQueryPlanTrip(stop_overs){
 								 "language":language
 							  };
 
+	console.log(data2backend);
 
 	var jsonData = JSON.stringify(data2backend);
 
@@ -2359,8 +2391,14 @@ function updateRoutePlan(){
 
 function initMap() {
 
-/* OpenStreet Map */
 
+	var url = 'http://mmrp.interreginvestment.eu/pegasus/map/tiles/12/2295/1576.png';
+	var img = new Image();
+	img.src = url;
+
+	img.onload = function()
+	{
+		// If the server is up, do this.
 	localmap = new google.maps.Map(document.getElementById('map'), {
           zoom: 10,
            center: {lat: 38.246639, lng: 21.734573},
@@ -2376,7 +2414,38 @@ function initMap() {
                 name: "OpenStreetMap",
                 maxZoom: 17
             }));
+   	return false;
+	}
 
+	img.onerror = function()
+	{
+		// If the server is down, do that.
+		localmap = new google.maps.Map(document.getElementById('map'), {
+		       zoom: 10,
+		        center: {lat: 38.246639, lng: 21.734573},
+		     });
+		return false;
+	}
+	
+
+	/* OpenStreet Map */
+/*
+	localmap = new google.maps.Map(document.getElementById('map'), {
+          zoom: 10,
+           center: {lat: 38.246639, lng: 21.734573},
+          mapTypeId: "OSM"
+        });
+
+	localmap.mapTypes.set("OSM", new google.maps.ImageMapType({
+                getTileUrl: function(coord, zoom) {
+                    // See above example if you need smooth wrapping at 180th meridian
+                    return "http://mmrp.interreginvestment.eu/pegasus/map/tiles/" + zoom + "/" + coord.x + "/" + coord.y + ".png";
+                },
+                tileSize: new google.maps.Size(256, 256),
+                name: "OpenStreetMap",
+                maxZoom: 17
+            }));
+*/
 	//map = localmap;
 
 /*

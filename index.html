@@ -10,7 +10,7 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
  	 <!script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"><!/script>
 	 <script async defer
-            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDxth0qsM28RlcY8gF8IaPDfBxPRL_GM1I&libraries=places"></script>
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBw-BW9w0Cxt0WC2AC2EaF3lNiv3ArachM&libraries=places"></script>
     <script src="./functionality.js"></script>
 	 <link rel="stylesheet" href="index.css"> 
 </head>
@@ -18,7 +18,7 @@
 
 	<div class="jumbotron text-center" style="background-color:#0a83fe;" >
 		<h1 style="color:#FFF">
-			<img src="./img/ic_logo_teliko-web.png" alt="logo" class="logoHeader" />
+			<img src="./img/ic_logo_teliko-web1.png" alt="logo" class="logoHeader" style="width:10vw;height:15vh" />
 					Tourist Tour Planner
 			<h4 text-align:left; style="color:#FFF">Your personal tour guide <br/>in Western Greece and Puglia! (Under Construction)  </h4> 
 		</h1>
@@ -34,13 +34,14 @@
 
 
 				<p> 
-					  <a href="javascript:function() { return false; }" >Language </a> |
+		  				<a href="#langModal" data-toggle="modal"
+								 data-target="#langModal" id="userLangLink" >Language </a> |
 						<!--a href="" >MMRP Evaluation</a> |
 						<a href="" >Report a bug</a--> 
-						<a href="javascript:function() { return false; }">
+						<a href="https://docs.google.com/forms/d/e/1FAIpQLSeknIrf4OJSIQL4EPKLSWthdnr5axjQ8W9kbqfcCyw7HZ-iow/viewform">
 							TTP Evaluation</a> |
-						<a href="javascript:function() { return false; }" >Report a bug</a> |
-						<a href="javascript:function() { return false; }">Feedback</a>
+						<a href="https://www.interreginvestment.eu/investment-ttp-bug-report/" >Report a bug</a> |
+						<a href="mailto:investment-info@ceid.upatras.gr?subject=INVESTMENT MMRP - Feedback&body=Hello, my comments about the APP are the following">Feedback</a>
 				</p>
 				<div>
 					<button id="PoiPrefButton" type="submit" class="btn pull-center btn-primary" style="width:100%" onclick="openPOIsNav()">POIs Preferences</button>
@@ -174,6 +175,37 @@
 
 
 
+				  <!-- Language Modal -->
+				  <div class="modal"  id="langModal" role="dialog">
+					 <div class="modal-dialog">
+					   <!-- Modal content-->
+						<div class="col-md-6 col-md-offset-3">
+						<!--h1 class="text-center text-bold mt-4x">Log in</h1-->
+						<div class="well row pt-2x pb-3x bk-light">
+						 	<button type="button" class="close" aria-label="Close" onclick='$("#langModal").modal("hide");'>
+							  <span aria-hidden="true">&times;</span>
+							</button>
+							<div class="col-md-8 col-md-offset-2">
+							<div class="modal-body">
+								<!form id="buttonCheckBox">
+								<form>
+									<input type='radio' class='radio-button' id="englLang" name="lang" value="english" checked>
+										<label for="englLang"> English </label><br>
+									<input type='radio' class='radio-button' id="grLang" name="lang" value="greek">
+										<label for="grLang"> Greek </label><br>
+									<input type='radio' class='radio-button' id="itLang" name="lang" value="italian">
+										<label for="itLang"> Italian </label><br>
+									<button id='trainButton' type="button" class="btn btn-primary" style="background-color:#d8d8d8;z-index:0;" onclick="changeLang();return false;">
+												Save</button>
+										
+								</form>
+						  </div>
+							
+							</div>
+						</div>
+					</div>
+				 </div>
+				</div>
 
 
 
