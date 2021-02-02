@@ -1015,6 +1015,17 @@ function queryRoutePoi2Poi(pois,index,poiDate){
 	
 	var lg = 'en';
 
+	if(language == 'English'){
+		lg = 'en';
+	}
+
+	if(language == 'Greek'){
+		lg = 'gr';
+	}
+
+	if(language == 'Italian'){
+		lg = 'it';
+	}
 	var slat = pplan.location.lat;
 	var slon = pplan.location.lon;
 	var dlat = pplane.location.lat;
@@ -2083,7 +2094,20 @@ function queryRoute(index){
 
 	var Url = 'http://mmrp.interreginvestment.eu:8000/getRoute/';
 	
+
 	var lg = 'en';
+
+	if(language == 'English'){
+		lg = 'en';
+	}
+
+	if(language == 'Greek'){
+		lg = 'gr';
+	}
+
+	if(language == 'Italian'){
+		lg = 'it';
+	}
 
 	var slat = pplan.start_location.lat;
 	var slon = pplan.start_location.lon;
