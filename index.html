@@ -20,7 +20,7 @@
 		<h1 style="color:#FFF">
 			<img src="./img/ic_logo_teliko-web1.png" alt="logo" class="logoHeader" style="width:10vw;height:15vh" />
 					Tourist Tour Planner
-			<h4 text-align:left; style="color:#FFF">Your personal tour guide <br/>in Western Greece and Puglia! (Under Construction)  </h4> 
+			<h4 text-align:left; style="color:#FFF">Your personal tour guide <br/>in Western Greece and Puglia!</h4> 
 		</h1>
 	</div>
 
@@ -38,10 +38,10 @@
 								 data-target="#langModal" id="userLangLink" >Language </a> |
 						<!--a href="" >MMRP Evaluation</a> |
 						<a href="" >Report a bug</a--> 
-						<a href="https://docs.google.com/forms/d/e/1FAIpQLSeknIrf4OJSIQL4EPKLSWthdnr5axjQ8W9kbqfcCyw7HZ-iow/viewform">
+						<a id='ttpEvaluation' href="https://docs.google.com/forms/d/e/1FAIpQLSeknIrf4OJSIQL4EPKLSWthdnr5axjQ8W9kbqfcCyw7HZ-iow/viewform">
 							TTP Evaluation</a> |
-						<a href="https://www.interreginvestment.eu/investment-ttp-bug-report/" >Report a bug</a> |
-						<a href="mailto:investment-info@ceid.upatras.gr?subject=INVESTMENT MMRP - Feedback&body=Hello, my comments about the APP are the following">Feedback</a>
+						<a id='repBug' href="https://www.interreginvestment.eu/investment-ttp-bug-report/" >Report a bug</a> |
+						<a id='feedback' href="mailto:investment-info@ceid.upatras.gr?subject=INVESTMENT MMRP - Feedback&body=Hello, my comments about the APP are the following">Feedback</a>
 				</p>
 				<div>
 					<button id="PoiPrefButton" type="submit" class="btn pull-center btn-primary" style="width:100%" onclick="openPOIsNav()">POIs Preferences</button>
@@ -60,30 +60,30 @@
 				</div>
 
 				<div style="border:1px solid black;padding-top=2vh;padding-bottom:2vh;padding-left:2vw;padding-right:2vw;" >
-				<h3>Start date/time</h3>
+				<h3 id='start_date_time'>Start date/time</h3>
 				<form style="padding-top=2vh;" id="sdatetime">
-					<label for="dateD">Date:</label>
+					<label for="dateD" id='dateDid'>Date:</label>
 					<input type="date" id="dateD" name="dateD"
 							 min="2018-01-01" value="2020-02-01" max="2100-12-31">
-					<label for="timeD">Time:</label>
+					<label for="timeD" id='timeDid'>Time:</label>
 					<input type="time" id="timeD" name="timeD">
 				</form>
 
-				<h3>End date/time</h3>
+				<h3 id='end_date_time'>End date/time</h3>
 				<form style="padding-top=2vh;" id="edatetime">
-					<label for="dateA">Date:</label>
+					<label for="dateA" id='dateAid'>Date:</label>
 					<input type="date" id="dateA" name="dateA"
 							 min="2018-01-01" max="2100-12-31">
-					<label for="timeA">Time:</label>
+					<label for="timeA" id='timeAid'>Time:</label>
 					<input type="time" id="timeA" name="timeA">
 				</form>
 
 				<h4 id="headmaxstopovers" style="padding-top=2vh;padding-bottom:2vh;">Maximum number of stopovers: 3</h4>
 				<form id="fromSlider" >
-					<input type="range" min="1" max="3" value="3" step="1" class="slider" id="maxstopovers" name="maxstopovers" data-toggle="tooltip" title="">
+					<input type="range" min="1" max="3" value="3" step="1" class="slider" id="maxstopovers" name="maxstopovers" data-toggle="tooltip" title="" onchange="maxstoopoverChange();">
 				</form>
 
-				<script>
+				<!--script>
 				document.getElementById("maxstopovers").onchange=function(){
 							var maxWT = document.getElementById("maxstopovers");
 							maxWT.title= maxWT.value;
@@ -91,16 +91,16 @@
 							var headerMaxWT = document.getElementById("headmaxstopovers");
 							headerMaxWT.innerHTML = "Maximum number of stopovers: "+ maxWT.value;
 				}
-				</script>
+				</script-->
 				</div>
 			
 				<div style="border:1px solid black; padding-top=2vh">
 				<h3></h3>
 				<form id="transCheckBox" style="padding-top=2vh;padding-bottom:2vh;padding-left:2vw;padding-right:2vw;">
 				  <input type='radio' class='radio-button' name="transCheckBox" value="publicTransCheckBox" id="publicTransCheckBox">
-				  <label for="publicTransCheckBox">Public Transport</label><br>
+				  <label for="publicTransCheckBox" id='publicTransCheckBoxLabel' >Public Transport</label><br>
 				  <input type='radio' class='radio-button' name="transCheckBox" value="privateTransCheckBox" id="privateTransCheckBox">
-				  <label for="privateTransCheckBox">Private Transport</label><br>
+				  <label for="privateTransCheckBox" id='privateTransCheckBoxLabel'>Private Transport</label><br>
 				</form>
 				</div>
 
@@ -195,7 +195,7 @@
 										<label for="grLang"> Greek </label><br>
 									<input type='radio' class='radio-button' id="itLang" name="lang" value="italian">
 										<label for="itLang"> Italian </label><br>
-									<button id='trainButton' type="button" class="btn btn-primary" style="background-color:#d8d8d8;z-index:0;" onclick="changeLang();return false;">
+									<button id='langSaveButton' type="button" class="btn btn-primary" style="background-color:#d8d8d8;z-index:0;" onclick="changeLang();return false;">
 												Save</button>
 										
 								</form>
@@ -221,34 +221,34 @@
 	<div id="POIsSideNav" class="overlay" style="z-index=100;">
 	  <a href="javascript:void(0)" class="closebtn" onclick="closePOIsNav()">&times;</a>
 			<div class="container" style="padding-top=3vh;align=center;background-color:#FFF; align-content: center;">
-			<h2>POIs Preferences</h2>
+			<h2 id='PoiPref'>POIs Preferences</h2>
 
-				<h4 style="align:center">Nature</h4>
+				<h4 style="align:center" id='nature'>Nature</h4>
 				<form id="fromSlider" >
 					<input type="range" min="0" max="3" value="3" step="1" class="slider" id="toolTipNature" name="toolTipNature" data-toggle="tooltip" title="">
 				</form>
 
-				<h4 style="align:center">Meseums or Galleries</h4>
+				<h4 style="align:center" id='museums_or_galleries'>Museums or Galleries</h4>
 				<form id="fromSlider" >
 					<input type="range" min="0" max="3" value="3" step="1" class="slider" id="toolTipMeseusGalleries" name="toolTipMeseusGalleries" data-toggle="tooltip" title="">
 				</form>
 
-				<h4 style="align:center">Monuments or Landmarks</h4>
+				<h4 style="align:center" id='monuments_or_landmarks'>Monuments or Landmarks</h4>
 				<form id="fromSlider" >
 					<input type="range" min="0" max="3" value="3" step="1" class="slider" id="toolTipMonumentsLandmarks" name="toolTipMonumentsLandmarks" data-toggle="tooltip" title="">
 				</form>
 
-				<h4 style="align:center">Religious Sites</h4>
+				<h4 style="align:center" id='religious_sites'>Religious Sites</h4>
 				<form id="fromSlider" >
 					<input type="range" min="0" max="3" value="3" step="1" class="slider" id="toolTipReligiousSites" name="toolTipReligiousSites" data-toggle="tooltip" title="">
 				</form>
 
-				<h4 style="align:center">Places with View</h4>
+				<h4 style="align:center" id='places_with_view'>Places with View</h4>
 				<form id="fromSlider" >
 					<input type="range" min="0" max="3" value="3" step="1" class="slider" id="toolTipPlacesView" name="toolTipPlacesView" data-toggle="tooltip" title="">
 				</form>
 
-				<h4 style="align:center">Settlements/Neighborhoods</h4>
+				<h4 style="align:center" id='settlements_neighborhoods'>Settlements/Neighborhoods</h4>
 				<form id="fromSlider" >
 					<input type="range" min="0" max="3" value="3" step="1" class="slider" id="toolTipSettlementsNeighborhoods" name="toolTipSettlementsNeighborhoods" data-toggle="tooltip" title="">
 				</form>
@@ -257,17 +257,17 @@
 			<div class="container" style="padding-top=3vh;padding-bottom=3vh;align=center;background-color:#FFF; align-content: center;">
 				<div class="row">
 					<div class="col-sm-6">
-						<h2>Daily itinerary starts at:</h2>
+						<h2 id='daily_itinerary_starts_at'>Daily itinerary starts at:</h2>
 						<form style="padding-top=2vh;">
-							<label for="timeDIS">Time:</label>
+							<label for="timeDIS" id='timeDISlabel'>Time:</label>
 							<input type="time" id="timeDIS" name="timeDIS"  value="08:00">
 						</form>
 					</div>
 
 					<div class="col-sm-6">
-						<h2>Daily itinerary ends at:</h2>
+						<h2 id='daily_itinerary_ends_at'>Daily itinerary ends at:</h2>
 						<form style="padding-top=2vh;">
-							<label for="timeDIE">Time:</label>
+							<label for="timeDIE" id='timeDIElabel'>Time:</label>
 							<input type="time" id="timeDIE" name="timeDIE" value="16:00">
 						</form>
 					</div>

@@ -41,12 +41,83 @@ var end_visiting_pois_at;
 var partial_solution_plan   = {compulsory_pois: [],excluded_pois: []};
 var partial_solution_explore={compulsory_stop_overs:[],excluded_stop_overs:[]};
 var language;
+var lg;
 
 var addDestRegionPlaces=[];
 var nameDestRegionPlaces=[];
 
+var langWords;
+
+function setLangWords(){
+	$.ajaxSetup({async : false}); 
+	$.getJSON("langWords.json", function(json) {
+		 langWords = json; 
+		 updateLang();
+		 $.ajaxSetup({async : true}); 
+	});
+
+
+}
+function maxstoopoverChange(){
+	var maxWT = document.getElementById("maxstopovers");
+	maxWT.title= maxWT.value;
+	max_stop_overs = parseInt(maxWT.value);	
+	var headerMaxWT = document.getElementById("headmaxstopovers");
+	
+	headerMaxWT.innerHTML = langWords.Maximum_number_of_stopovers[lg] + maxWT.value;
+	
+	//headerMaxWT.innerHTML = "Maximum number of stopovers: "+ maxWT.value;
+}
+
+function updateLang(){
+
+	console.log();
+	document.getElementById("userLangLink").innerHTML = langWords.userLangLink[lg];
+	document.getElementById("ttpEvaluation").innerHTML = langWords.ttpEvaluation[lg];
+	document.getElementById("repBug").innerHTML = langWords.repBug[lg];
+	document.getElementById("feedback").innerHTML = langWords.feedback[lg];
+	document.getElementById("PoiPrefButton").innerHTML = langWords.PoiPrefButton[lg];
+
+	document.getElementById("spoint").placeholder = langWords.spointPlaceholder[lg];
+	document.getElementById("epoint").placeholder = langWords.epointPlaceholder[lg];
+	document.getElementById("start_date_time").innerHTML = langWords.start_date_time[lg];
+	document.getElementById("dateDid").innerHTML = langWords.dateDid[lg];
+	document.getElementById("timeDid").innerHTML = langWords.timeDid[lg];
+	document.getElementById("end_date_time").innerHTML = langWords.end_date_time[lg];
+	document.getElementById("dateAid").innerHTML = langWords.dateDid[lg];
+	document.getElementById("timeAid").innerHTML = langWords.timeDid[lg];
+	maxstoopoverChange();
+	
+	document.getElementById("publicTransCheckBoxLabel").innerHTML = langWords.publicTransCheckBoxLabel[lg];
+	document.getElementById("privateTransCheckBoxLabel").innerHTML = langWords.privateTransCheckBoxLabel[lg];
+
+	document.getElementById("searchFormButton").innerHTML = langWords.searchFormButton[lg];
+	document.getElementById("headerTourPlan").innerHTML = langWords.headerTourPlan[lg];
+	document.getElementById("destRegion").placeholder = langWords.destRegion[lg];
+
+	document.getElementById("langSaveButton").innerHTML = langWords.langSaveButton[lg];
+	document.getElementById("PoiPref").innerHTML = langWords.PoiPrefButton[lg];
+
+	document.getElementById("nature").innerHTML = langWords.nature[lg];
+	document.getElementById("museums_or_galleries").innerHTML = langWords.museums_or_galleries[lg];
+	document.getElementById("monuments_or_landmarks").innerHTML = langWords.monuments_or_landmarks[lg];
+	document.getElementById("places_with_view").innerHTML = langWords.places_with_view[lg];
+	document.getElementById("settlements_neighborhoods").innerHTML = langWords.settlements_neighborhoods[lg];
+	document.getElementById("religious_sites").innerHTML = langWords.religious_sites[lg];
+	document.getElementById("daily_itinerary_starts_at").innerHTML = langWords.daily_itinerary_starts_at[lg];
+	document.getElementById("timeDISlabel").innerHTML = langWords.timeDid[lg];
+	document.getElementById("daily_itinerary_ends_at").innerHTML = langWords.daily_itinerary_ends_at[lg];
+	document.getElementById("timeDIElabel").innerHTML = langWords.timeDid[lg];
+	document.getElementById("POIsSaveButton").innerHTML = langWords.langSaveButton[lg];
+	
+
+
+}
+
+
 function changeLang(){
 
+	
    var englg =  document.getElementById("englLang");
 	var grlg  =  document.getElementById("grLang");
 	var itlg  =  document.getElementById("itLang");
@@ -54,21 +125,23 @@ function changeLang(){
 
 	if(englg.checked == true){
 		language  = 'English'; 
+		lg = 'en';
 	}
 	if(grlg.checked == true){
 		language  = 'Greek';
+		lg = 'gr';
 	}
 
 	if(itlg.checked == true){
 		language  = 'Italian';
+		lg = 'it';
 	}
 	
 	$('#langModal').modal('hide');
 	
-/*
-   console.log(document.getElementById("spoint").value.length );
-	console.log(document.getElementById("epoint").value.length );
-*/
+
+	updateLang();
+
  	if(document.getElementById("spoint").value.length > 0 &&  document.getElementById("epoint").value.length > 0){
 		submitQuery();
 	}
@@ -236,6 +309,9 @@ function closePOIsNav() {
 
 function initializeFunctions(){
 
+	language  = 'English'; 
+	lg = 'en';
+	setLangWords();
 	var swidth = $( window ).width();
 	var sheight = $( window ).height();
 	cssDeviceChange(swidth,sheight);
@@ -246,6 +322,8 @@ function initializeFunctions(){
 	initMap();
 
 	getDestRegionPlaces();
+	
+	updateLang();
 	return false;
 }
 
@@ -259,7 +337,7 @@ function defaultVals(){
 	document.getElementById("maxstopovers").max = 3;
 	document.getElementById("maxstopovers").min = 1;
 	document.getElementById("maxstopovers").value = max_stop_overs;
-	document.getElementById("headmaxstopovers").innerHTML = "Maximum number of stopovers: "+ document.getElementById("maxstopovers").value;
+	document.getElementById("headmaxstopovers").innerHTML = langWords.Maximum_number_of_stopovers[lg]+ document.getElementById("maxstopovers").value;
 	/* ------------- */
 
 
@@ -755,13 +833,13 @@ function addInfoToPoi(info){
 	var price = info.price;
 
 	if(price == 0){
-		price = 'Free';
+		price = langWords.priceFree[lg];
 	}
 
 	placeInfo.innerHTML = placeInfo.innerHTML + '<p><img src='+ info.photo + ' height="120vh" width="120vw" onError="this.src = \'./img/imgNotFound.png\'" style="float:left; padding-top:1vh; padding-right:2vw;">' +
 									'</br>' + info.address + '</br>' + 
-									'</br>Duration: ' + info.visit_time + ' minutes' + 
-									'</br>Entrance: ' + price +
+									'</br>'+langWords.Duration[lg] + info.visit_time + ' min' + 
+									'</br>'+langWords.Entrance[lg] + price +
 									'</br></p>';
 
 
@@ -1120,10 +1198,10 @@ function updatePoisButton(pois,index, plansIndex){
 		poisNode.innerHTML = '<img src='+ photo[0] + ' height="100vh" width="70vw" onError="this.src = \'./img/imgNotFound.png\'" style="float:left; padding-top:2vh;">' +
 		//poisNode.innerHTML =	'<p style="font-size:15px">' + poi.name +
 									'</br><pre style="font-size:12px;border-style:none;background-color:white;"><b>' + poi.name + '</b>'+
-									'</br>Arrival: ' + poi.arrival_time +
-									'</br>Departure: ' + poi.departure_time +
-									'</br>Duration: ' + dur + ' minutes' + 
-									'</br>Entrance: ' + price +
+									'</br>' + langWords.Arrival[lg]+ poi.arrival_time +
+									'</br>' + langWords.Departure[lg] + poi.departure_time +
+									'</br>' + langWords.Duration[lg] + dur + ' min' + 
+									'</br>' + langWords.Entrance[lg] + price +
 									'</br></pre>';
 
 
@@ -1306,16 +1384,16 @@ function addDirections(type,street,arrivalTime,leaveTime,waitTime,streetE,arriva
 		walk_time = Number(walk_time);
 		var h = Math.floor(walk_time / 3600);
 		var m = Math.floor(walk_time % 3600 / 60);
-		var hDisplay = h > 0 ? h + (h == 1 ? " hour, " : " hours") : "";
-		var mDisplay = m > 0 ? m + (m == 1 ? " minute, " : " minutes") : "";
+		var hDisplay = h > 0 ? h + (h == 1 ? " h " : " h") : "";
+		var mDisplay = m > 0 ? m + (m == 1 ? " min, " : " min") : "";
 		var outputwalk_time =  hDisplay + mDisplay; 
 
 		
 		travel_time = Number(travel_time);
 		h = Math.floor(travel_time / 3600);
 		m = Math.floor(travel_time % 3600 / 60);
-		hDisplay = h > 0 ? h + (h == 1 ? " hour " : " hours ") : "";
-		mDisplay = m > 0 ? m + (m == 1 ? " minute " : " minutes ") : "";
+		hDisplay = h > 0 ? h + (h == 1 ? " h " : " h ") : "";
+		mDisplay = m > 0 ? m + (m == 1 ? " min " : " min ") : "";
 		var outputtravel_time =  hDisplay + mDisplay; 
 
 		distance = distance/ 1000;
@@ -1324,63 +1402,63 @@ function addDirections(type,street,arrivalTime,leaveTime,waitTime,streetE,arriva
 		var testing = false;
 		var imageNode = document.createElement('img');
 		if (!testing && type === "walk"){
-			outputMessage = "Walk to "+streetE +
-										 "\nDept. Time: "+leaveTime+ 
-										 "\nTravel Time: "+ outputwalk_time + 
-										 "\nDistance: "+distance;
+			outputMessage = langWords.Walk_to[lg]+streetE +
+										 "\n"+langWords.dept_time[lg] +leaveTime+ 
+										 "\n"+langWords.travel_time[lg]+ outputwalk_time + 
+										 "\n"+langWords.Distance[lg]+distance;
 
 			
 			imgSrc = './img/walk3ar.png';
 		}else if ( !testing &&  type === "bus" ){
 			//var desc = "Dromologio Tade";
-			outputMessage = desc + " \nBus to " + streetE +
-								 "\nDept. Time: "+leaveTime + " "+
-								 "\nTravel Time: "+ outputtravel_time + 
-								 "\nDistance: "+distance;
+			outputMessage = desc + " \n"+langWords.Bus_to[lg] + streetE +
+								 "\n"+langWords.Dept_Time[lg]+leaveTime + " "+
+								 "\n"+langWords.Travel_Time[lg]+ outputtravel_time + 
+								 "\n"+langWords.Distance[lg]+distance;
 			imgSrc = './img/busar.png';
 		}else if ( !testing &&  type === "car" ){
-			outputMessage = "Drive to " + streetE +
-								 "\nDept. Time: "+leaveTime + " "+
-								 "\nTravel Time: "+ outputtravel_time + 
-								 "\nDistance: "+distance;
+			outputMessage = langWords.Drive_to[lg] + streetE +
+								 "\n"+langWords.Dept_Time[lg]+leaveTime + " "+
+								 "\n"+langWords.Travel_Time[lg]+ outputtravel_time + 
+								 "\n"+langWords.Distance[lg]+distance;
 			imgSrc = './img/car2m.png';
 		}else if ( !testing &&  type === "rail" ){
 			//var desc = "Dromologio Tade";
-			outputMessage = desc + " \nRail to " + streetE +
-								 "\nDept. Time: "+leaveTime + " "+
-								 "\nTravel Time: "+ outputtravel_time;
+			outputMessage = desc + " \n"+langWords.Rail_to[lg] + streetE +
+								 "\n"+langWords.Dept_Time[lg]+leaveTime + " "+
+								 "\n"+langWords.Travel_Time[lg]+ outputtravel_time;
 			imgSrc = './img/trainar.png';
 		}else if ( !testing &&  type === "subway" ){
 			//var desc = "Dromologio Tade";
-			outputMessage = desc + " \nSubway to " + streetE +
-								 "\nDept. Time: "+leaveTime + " "+
-								 "\nTravel Time: "+ outputtravel_time + 
-								 "\nDistance: "+distance;
+			outputMessage = desc + " \n"+langWords.Subway_to[lg]+ streetE +
+								 "\n"+langWords.Dept_Time[lg]+leaveTime + " "+
+								 "\n"+langWords.Travel_Time[lg]+ outputtravel_time + 
+								 "\n"+langWords.Distance[lg]+distance;
 			imgSrc = './img/subwayar.png';
 		}else if ( !testing &&  type === "tram" ){
 			//var desc = "Dromologio Tade";
-			outputMessage = desc + " \nTram to " + streetE +
-								 "\nDept. Time: "+leaveTime + " "+
-								 "\nTravel Time: "+ outputtravel_time + 
-								 "\nDistance: "+distance;
+			outputMessage = desc + " \n"+langWords.Tram_to[lg] + streetE +
+								 "\n"+langWords.Dept_Time[lg]+leaveTime + " "+
+								 "\n"+langWords.Travel_Time[lg]+ outputtravel_time + 
+								 "\n"+langWords.Distance[lg]+distance;
 
 			imgSrc = './img/tramar.png';
 		}else if ( !testing &&  type === "ferry" ){
 			//var desc = "Dromologio Tade";
-			outputMessage = desc + " \nFerry to " + streetE +
-								 "\nDept. Time: "+leaveTime + " "+
-								 "\nTravel Time: "+ outputtravel_time + 
-								 "\nDistance: "+distance;
+			outputMessage = desc + " \n"+langWords.Ferry_to[lg] + streetE +
+								 "\n"+langWords.Dept_Time[lg]+leaveTime + " "+
+								 "\n"+langWords.Travel_Time[lg]+ outputtravel_time + 
+								 "\n"+langWords.Distance[lg]+distance;
 			imgSrc = './img/ferryar.png';
 		}else if ( !testing &&  type === "trolleybus" ){
 			//var desc = "Dromologio Tade";
-			outputMessage = desc + " \nTorlleybus to " + streetE +
-								 "\nDept. Time: "+leaveTime + " "+
-								 "\nTravel Time: "+ outputtravel_time + 
-								 "\nDistance: "+distance;
+			outputMessage = desc + " \n"+langWords.Torlleybus_to[lg] + streetE +
+								 "\n"+langWords.Dept_Time[lg]+leaveTime + " "+
+								 "\n"+langWords.Travel_Time[lg]+ outputtravel_time + 
+								 "\n"+langWords.Distance[lg]+distance;
 			imgSrc = './img/trolleybusar.png';
 	   }else{
- 			outputMessage = "Dept.Time: " + arrivalTime + " | Arr.Time: " + leaveTime +"\nTotal Time: " + outputtravel_time + "\nTotal Distance:" + distance + "\n" +"  \n";
+ 			outputMessage = langWords.Dept_Time[lg] + arrivalTime + " | "+ langWords.Arr_Time[lg] + leaveTime +"\n"+langWords.Total_Time[lg] + outputtravel_time + "\n"+langWords.Total_Distance[lg] + distance + "\n" +"  \n";
 			//outputMessage = "Total Time: " + outputtravel_time + "\nTotal Distance:" + distance + "    ";
 			imgSrc = './img/icons8_route.png';
 		}
@@ -1522,7 +1600,7 @@ function drawLineMap(coordinates,colorMod,putMarkers,street,arrivalTime,leaveTim
 			imgSrcS = './img/trolleybus.png';
 			imgSrcE = '';
 	   }else{
-			outputMessage = "Total Time to Destination: " + outputtravel_time + "\nTotal Distance to Destination:" + distance;
+			outputMessage = langWords.Total_Time_to_Destination[lg] + outputtravel_time + "\n"+langWords.Total_Distance_to_Destination[lg] + distance;
 //			outputMessage = "From: " + street + " To:" + streetE + " by " + type;
 			imgSrc = undefined;
 		}
@@ -1565,11 +1643,11 @@ function drawLineMap(coordinates,colorMod,putMarkers,street,arrivalTime,leaveTim
 			waitTime = "-";
 		}
 */
-		var messageS = 'Street: ' + street + 
-							'\nArrival Time: '+ toDate(arrivalTime)+
-							'\nLeave Time: '+ toDate(leaveTime)+
-							'\nWait Time: '+ waitTime +
-							'\nTransport: '+ colorMod;
+		var messageS = langWords.Street[lg]+ street + 
+							'\n'+langWords.Arrival_Time[lg]+ toDate(arrivalTime)+
+							'\n'+langWords.Leave_Time[lg]+ toDate(leaveTime)+
+							'\n'+langWords.Wait_Time[lg]+ waitTime +
+							'\n'+langWords.Transport[lg]+ colorMod;
 
 		var myIcon = new google.maps.MarkerImage(imgSrcS);
 		var markerS = new google.maps.Marker({
@@ -1581,8 +1659,8 @@ function drawLineMap(coordinates,colorMod,putMarkers,street,arrivalTime,leaveTim
 
 		markerS.icon.scale=20;
 
-		var messageE = 'Street: ' + streetEnd + 
-							'\nArrival Time: '+ toDate(arrivalTimeEnd);
+		var messageE = langWords.Street[lg]+ + streetEnd + 
+							'\n'+langWords.Arrival_Time[lg]+ toDate(arrivalTimeEnd);
 
 		myIcon = new google.maps.MarkerImage(imgSrcE);
 		var markerE = new google.maps.Marker({
@@ -1746,11 +1824,11 @@ function drawLineMapPoi2Poi(coordinates,colorMod,putMarkers,street,arrivalTime,l
 			waitTime = "-";
 		}
 */
-		var messageS = 'Street: ' + street + 
-							'\nArrival Time: '+ toDate(arrivalTime)+
-							'\nLeave Time: '+ toDate(leaveTime)+
-							'\nWait Time: '+ waitTime +
-							'\nTransport: '+ colorMod;
+		var messageS = langWords.Street[lg] + street + 
+							'\n'+ langWords.Arrival_Time[lg]+ toDate(arrivalTime)+
+							'\n'+ langWords.Leave_Time[lg]+ toDate(leaveTime)+
+							'\n'+ langWords.Wait_Time[lg]+ waitTime +
+							'\n'+ langWords.Transport[lg]+ colorMod;
 
 		var myIcon = new google.maps.MarkerImage(imgSrcS);
 		var markerS = new google.maps.Marker({
@@ -1762,8 +1840,8 @@ function drawLineMapPoi2Poi(coordinates,colorMod,putMarkers,street,arrivalTime,l
 
 		markerS.icon.scale=20;
 
-		var messageE = 'Street: ' + streetEnd + 
-							'\nArrival Time: '+ toDate(arrivalTimeEnd);
+		var messageE =  langWords.Street[lg] + streetEnd + 
+							'\n'+ langWords.Arrival_Time[lg]+ toDate(arrivalTimeEnd);
 
 		myIcon = new google.maps.MarkerImage(imgSrcE);
 		var markerE = new google.maps.Marker({
@@ -1808,16 +1886,16 @@ function addDirectionsPoi2Poi(type,street,arrivalTime,leaveTime,waitTime,streetE
 		walk_time = Number(walk_time);
 		var h = Math.floor(walk_time / 3600);
 		var m = Math.floor(walk_time % 3600 / 60);
-		var hDisplay = h > 0 ? h + (h == 1 ? " hour, " : " hours") : "";
-		var mDisplay = m > 0 ? m + (m == 1 ? " minute, " : " minutes") : "";
+		var hDisplay = h > 0 ? h + (h == 1 ? " h, " : " h") : "";
+		var mDisplay = m > 0 ? m + (m == 1 ? " min, " : " min") : "";
 		var outputwalk_time =  hDisplay + mDisplay; 
 
 		
 		travel_time = Number(travel_time);
 		h = Math.floor(travel_time / 3600);
 		m = Math.floor(travel_time % 3600 / 60);
-		hDisplay = h > 0 ? h + (h == 1 ? " hour " : " hours ") : "";
-		mDisplay = m > 0 ? m + (m == 1 ? " minute " : " minutes ") : "";
+		hDisplay = h > 0 ? h + (h == 1 ? " h " : " h ") : "";
+		mDisplay = m > 0 ? m + (m == 1 ? " min " : " min ") : "";
 		var outputtravel_time =  hDisplay + mDisplay; 
 
 		distance = distance/ 1000;
@@ -1826,63 +1904,63 @@ function addDirectionsPoi2Poi(type,street,arrivalTime,leaveTime,waitTime,streetE
 		var testing = false;
 		var imageNode = document.createElement('img');
 		if (!testing && type === "walk"){
-			outputMessage = "Walk to "+streetE +
-										 "\nDept. Time: "+leaveTime+ 
-										 "\nTravel Time: "+ outputwalk_time + 
-										 "\nDistance: "+distance;
+			outputMessage = langWords.Walk_to[lg] +streetE +
+										 "\n"+langWords.Dept_Time[lg]+leaveTime+ 
+										 "\n"+langWords.Travel_Time[lg]+ outputwalk_time + 
+										 "\n"+langWords.Distance[lg]+distance;
 
 			
 			imgSrc = './img/walk3ar.png';
 		}else if ( !testing &&  type === "bus" ){
 			//var desc = "Dromologio Tade";
-			outputMessage = desc + " \nBus to " + streetE +
-								 "\nDept. Time: "+leaveTime + " "+
-								 "\nTravel Time: "+ outputtravel_time + 
-								 "\nDistance: "+distance;
+			outputMessage = desc + " \n"+langWords.Bus_to[lg]+ streetE +
+								 "\n"+langWords.Dept_Time[lg]+leaveTime + " "+
+								 "\n"+langWords.Travel_Time[lg]+ outputtravel_time + 
+								 "\n"+langWords.Distance[lg]+distance;
 			imgSrc = './img/busar.png';
 		}else if ( !testing &&  type === "car" ){
-			outputMessage = "Drive to " + streetE +
-								 "\nDept. Time: "+leaveTime + " "+
-								 "\nTravel Time: "+ outputtravel_time + 
-								 "\nDistance: "+distance;
+			outputMessage = langWords.Drive_to[lg] + streetE +
+								 "\n"+langWords.Dept_Time[lg]+leaveTime + " "+
+								 "\n"+langWords.Travel_Time[lg]+ outputtravel_time + 
+								 "\n"+langWords.Distance[lg]+distance;
 			imgSrc = './img/car2m.png';
 		}else if ( !testing &&  type === "rail" ){
 			//var desc = "Dromologio Tade";
-			outputMessage = desc + " \nRail to " + streetE +
-								 "\nDept. Time: "+leaveTime + " "+
-								 "\nTravel Time: "+ outputtravel_time;
+			outputMessage = desc + " \n"+langWords.Rail_to[lg] + streetE +
+								 "\n"+langWords.Dept_Time[lg]+leaveTime + " "+
+								 "\n"+langWords.Travel_Time[lg]+ outputtravel_time;
 			imgSrc = './img/trainar.png';
 		}else if ( !testing &&  type === "subway" ){
 			//var desc = "Dromologio Tade";
-			outputMessage = desc + " \nSubway to " + streetE +
-								 "\nDept. Time: "+leaveTime + " "+
-								 "\nTravel Time: "+ outputtravel_time + 
-								 "\nDistance: "+distance;
+			outputMessage = desc + " \n"+langWords.Subway_to[lg] + streetE +
+								 "\n"+langWords.Dept_Time[lg]+leaveTime + " "+
+								 "\n"+langWords.Travel_Time[lg]+ outputtravel_time + 
+								 "\n"+langWords.Distance[lg]+distance;
 			imgSrc = './img/subwayar.png';
 		}else if ( !testing &&  type === "tram" ){
 			//var desc = "Dromologio Tade";
-			outputMessage = desc + " \nTram to " + streetE +
-								 "\nDept. Time: "+leaveTime + " "+
-								 "\nTravel Time: "+ outputtravel_time + 
-								 "\nDistance: "+distance;
+			outputMessage = desc + " \n"+langWords.Tram_to[lg] + streetE +
+								 "\n"+langWords.Dept_Time[lg]+leaveTime + " "+
+								 "\n"+langWords.Travel_Time[lg]+ outputtravel_time + 
+								 "\n"+langWords.Distance[lg]+distance;
 
 			imgSrc = './img/tramar.png';
 		}else if ( !testing &&  type === "ferry" ){
 			//var desc = "Dromologio Tade";
-			outputMessage = desc + " \nFerry to " + streetE +
-								 "\nDept. Time: "+leaveTime + " "+
-								 "\nTravel Time: "+ outputtravel_time + 
-								 "\nDistance: "+distance;
+			outputMessage = desc + " \n"+langWords.Ferry_to[lg] + streetE +
+								 "\n"+langWords.Dept_Time[lg]+leaveTime + " "+
+								 "\n"+langWords.Travel_Time[lg]+ outputtravel_time + 
+								 "\n"+langWords.Distance[lg]+distance;
 			imgSrc = './img/ferryar.png';
 		}else if ( !testing &&  type === "trolleybus" ){
 			//var desc = "Dromologio Tade";
-			outputMessage = desc + " \nTorlleybus to " + streetE +
-								 "\nDept. Time: "+leaveTime + " "+
-								 "\nTravel Time: "+ outputtravel_time + 
-								 "\nDistance: "+distance;
+			outputMessage = desc + " \n"+langWords.Torlleybus_to[lg] + streetE +
+								 "\n"+langWords.Dept_Time[lg]+leaveTime + " "+
+								 "\n"+langWords.Travel_Time[lg]+ outputtravel_time + 
+								 "\n"+langWords.Distance[lg]+distance;
 			imgSrc = './img/trolleybusar.png';
 	   }else{
-			outputMessage = "Total Time: " + outputtravel_time + "\nTotal Distance:" + distance + "    ";
+			outputMessage = langWords.Total_Time[lg] + outputtravel_time + "\n"+langWords.Total_Distance[lg]+ distance + "    ";
 			imgSrc = './img/icons8_route.png';
 		}
 
@@ -2195,8 +2273,8 @@ function insertNodeTourPlan(chosen_departure,days,time,duration,distance,end_dat
 		button.innerHTML =  "<pre style='background-color:inherit;border-style:none;'>" + 
 									//" | " + index + " | " +
 									"\n" +  index + " " + name  +
-									"\nFrom:" + start_date  + "\nUntil:" + end_date +"\n" +
-									"Departure: " + time + " \nDistance: "  + distance   + " \nDuration: " + duration + "</pre>" + 
+									"\n"+langWords.From[lg] + start_date  + "\n"+langWords.Until[lg] + end_date +"\n" +
+									langWords.Departure[lg] + time + " \n" + langWords.Distance[lg]  + distance   + " \n"+langWords.Duration[lg] + duration + "</pre>" + 
 									"</pre>";
 
 
@@ -2221,7 +2299,7 @@ function insertNodeTourPlan(chosen_departure,days,time,duration,distance,end_dat
 		for(var i=1; i<maxnights+1; i++){
 			var z = document.createElement("option");
 			z.setAttribute("value", i  );
-			var t = document.createTextNode("for " + i +" night(s)");
+			var t = document.createTextNode("for " + i + " " + langWords.night[lg]);
 			z.appendChild(t);
 			if(i == days){
 				z.selected="selected";

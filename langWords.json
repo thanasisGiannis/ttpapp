@@ -1,0 +1,112 @@
+{
+
+  "ttpEvaluation": {"en": "Evaluation", "gr": "Αξιολόγηση", "it": "Evaluation"},
+  "repBug": {"en": "Report a bug", "gr": "Αναφορά σφάλματος", "it": "Report a bug"},
+  "feedback": {"en": "Feedback", "gr": "Επικοινωνία", "it": "feedback"},
+  "PoiPrefButton": {"en": "POIs Preferences", "gr": "Επιλογές για τα POI", "it": "POIs Preferences"},
+  "spointPlaceholder": {"en": "Starting at", "gr": "Αφετηρία", "it": "Starting at"},
+  "epointPlaceholder": {"en": "Ending at", "gr": "Προορισμός", "it": "Ending at"},
+  "start_date_time": {"en": "Start Date/Time", "gr": "Ημ/νια και Ώρα Αναχώρησης", "it": "Start Date/Time"},
+
+  "dateDid": {"en": "Date", "gr": "Ημ/νια", "it": "Date"},
+  "timeDid": {"en": "Time", "gr": "'Ωρα", "it": "Time"},
+  "end_date_time": {"en": "End Date/Time", "gr": "Ημ/νια και Ώρα Άφιξης", "it": "End Date/Time"},
+
+  "Maximum_number_of_stopovers": {"en": "Maximum number of stopovers: ", "gr": "Μέγιστο πλήθος στάσεων: ", "it": "Maximum number of stopovers: "},
+
+  "publicTransCheckBoxLabel": {"en": "Public Transport", "gr": "Δημόσια συγκοινωνία", "it": "Public Transport"},
+
+  "privateTransCheckBoxLabel": {"en": "Private Transport", "gr": "Ιδιωτικό μέσο", "it": "Private Transport"},
+
+  "searchFormButton": {"en": "Plan my trip!", "gr": "Σχεδιάστε το ταξίδι!", "it": "Plan my trip!"},
+
+  "headerTourPlan": {"en": "Tour Plan", "gr": "Σχέδιο Ταξιδιού", "it": "Tour Plan"},
+  "destRegion": {"en": "Add a destination/region", "gr": "Προσθήκη προορισμού", "it": "Add a destination/region"},
+  "langSaveButton": {"en": "Save", "gr": "Αποθήκευση", "it": "Save"},
+
+  "nature": {"en": "Nature", "gr": "Φύση", "it": "Nature"},
+  "museums_or_galleries": {"en": "Museums or Galleries", "gr": "Μουσεία/Γκαλερί", "it": "Museums or Galleries"},
+  "monuments_or_landmarks": {"en": "Monuments or Landmarks", "gr": "Μνημεία", "it": "Monuments or Landmarks"},
+  "religious_sites": {"en": "Religious Sites", "gr": "Ναοί", "it": "Religious Sites"},
+  "places_with_view": {"en": "Places with View", "gr": "Μέρη με θέα", "it": "Places with View"},
+  "settlements_neighborhoods": {"en": "Settlements/Neighborhoods", "gr": "Γειτονιές", "it": "Settlements/Neighborhoods"},
+
+  "daily_itinerary_starts_at": {"en": "Daily itinerary starts at:", "gr": "Το καθημερινό δρομολόγιο ξεκινά στις:", "it": "Daily itinerary starts at:"},
+  "daily_itinerary_ends_at": {"en": "Daily itinerary ends at:", "gr": "Το καθημερινό δρομολόγιο τελειώνει στις:", "it": "Daily itinerary ends at:"},
+
+  "Duration": {"en": "Duration: ", "gr": "Διάρκεια: ", "it": "Duration: "},
+  "Entrance": {"en": "Entrance: ", "gr": "Είσοδος: ", "it": "Entrance: "},
+  "priceFree": {"en": "Free", "gr": "Ελεύθερη", "it": "Free"},
+  "Arrival": {"en": "Arrival: ", "gr": "Άφιξη: ", "it": "Arrival: "},
+  "Departure": {"en": "Departure: ", "gr": "Αναχώρηση: ", "it": "Departure: "},
+  "Distance": {"en": "Distance: ", "gr": "Απόσταση: ", "it": "Distance: "},
+
+  "dept_time": {"en": "Dept.Time: ", "gr": "Αναχώρηση στις: ", "it": "Dept.Time: "},
+  "Dept_Time": {"en": "Dept.Time: ", "gr": "Αναχώρηση στις: ", "it": "Dept.Time: "},
+  "travel_time": {"en": "Travel Time: ", "gr": "Διάρκεια Ταξιδιού: ", "it": "Travel Time: "},
+  "Travel_Time": {"en": "Travel Time: ", "gr": "Διάρκεια Ταξιδιού: ", "it": "Travel Time: "},
+
+  "Walk_to": {"en": "Walk to ", "gr": "Περπατήστε μέχρι ", "it": "Walk to "},
+
+  "Bus_to": {"en": "Bus to: ","gr": "Με λεωφορείο μέχρι: ", "it": "Bus to: "},
+  "Drive_to": {"en": "Drive to: ","gr": "Με αμάξι μέχρι: ", "it": "Drive to: "},
+  "Rail_to": {"en": "Rail to: ","gr": "Με τραίνο μέχρι: ", "it": "Rail to: "},
+  "Subway_to": {"en": "Subway to: ","gr": "Με μετρό μέχρι: ", "it": "Subway to: "},
+  
+  "Tram_to": {"en": "Tram to: ","gr": "Με τραμ μέχρι: ", "it": "Tram to: "},
+  
+  "Ferry_to": {"en": "Ferry to: ","gr": "Με πλοίο μέχρι: ", "it": "Ferry to: "},
+  "Trolleybus_to": {"en": "Trolleybus to: ","gr": "Με τρόλλεϋ μέχρι: ", "it": "Trolleybus to: "},
+
+  "Total_Time_to_Destination": {"en": "Total Time to Destination: ","gr": "Συνολικός Χρόνος: ", "it": "Total Time to Destination: "},
+
+  "Total_Distance_to_Destination": {"en": "Total Distance to Destination: ","gr": "Συνολική Απόσταση: ", "it": "Total Distance to Destination: "},
+
+
+  "night": {"en": "night(s)","gr": "νύχτες", "it": "night(s)"},
+
+
+
+  "Street": {"en": "Street: ","gr": "Δρόμος: ", "it": "Street: "},
+  "Arrival_Time": {"en": "Arrival Time: ","gr": "'Ώρα προέλευσης: ", "it": "Arrival Time: "},
+  "Leave_Time": {"en": "Leave Time: ","gr": "Ώρα Αναχώρησης: ", "it": "Leave Time: "},
+  "Wait_Time": {"en": "Wait Time: ","gr": "Χρόνος Αναμονής: ", "it": "Wait Time: "},
+  "Transport": {"en": "Transport: ","gr": "Μεταφορικό: ", "it": "Transport: "},
+
+  "Arr_Time": {"en": "Arr. Time: ","gr": "Ώρα Άφιξης: ", "it": "Arr. Time: "},
+  "Total_Time": {"en": "Total Time: ","gr": "Συνολικός χρόνος ταξιδιού: ", "it": "Total Time: "},
+  "Total_Distance": {"en": "Total Distance: ","gr": "Συνολική Απόσταση: ", "it": "Total Distance: "},
+
+  "From": {"en": "From: ","gr": "Από: ", "it": "From: "},
+  "Until": {"en": "Until: ","gr": "Μέχρι: ", "it": "Until: "},
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  "userLangLink": {"en": "Language", "gr": "Γλώσσα", "it": "Language"}
+
+  
+}
